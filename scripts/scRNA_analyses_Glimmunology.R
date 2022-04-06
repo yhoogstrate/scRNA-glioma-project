@@ -1,4 +1,4 @@
-f#!/usr/bin/env R
+#!/usr/bin/env R
 
 # load libs ----
 
@@ -23,7 +23,7 @@ gc()
 
 
 sid <- 'van_Hijfte_Sample_Y'
-object_1 <- Read10X(data.dir = "~data/scRNA_glim/Glioma_Y_and_O/Levi2_Glioma_Y/outs/raw_feature_bc_matrix")
+object_1 <- Read10X(data.dir = "data/Glimmunology_GBM_1/Glioma_Y_and_O/Levi2_Glioma_Y/outs/raw_feature_bc_matrix")
 object_1 <- CreateSeuratObject(counts = object_1,
                                min.cells = 3,
                                min.features = 200,

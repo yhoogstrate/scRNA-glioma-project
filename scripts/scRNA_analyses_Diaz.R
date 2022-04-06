@@ -2694,7 +2694,27 @@ object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 
 
 
 # scRNA SF11964 LGG :: ----
+
+
+rm(sid, object_1)
+gc()
+
+sid <- 'scRNA_GSM4119537_SF11964_LGG'
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
+object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
+
+
+
 # scRNA SF11949 ODG :: ----
+
+rm(sid, object_1)
+gc()
+
+sid <- 'scRNA_GSM4119539_SF11612_ODG'
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
+object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
+
+
 # scRNA SF11612 ODG :: ----
 
 
