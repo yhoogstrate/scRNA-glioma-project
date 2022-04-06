@@ -56,7 +56,7 @@ library(patchwork)
 
 # :: GSE138794 :: Diaz :: ----
 
-# snRNA SF10022 [HQ] ----
+# snRNA SF10022 GBM [HQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -68,9 +68,10 @@ library(patchwork)
 rm(sid, object_1)
 gc()
 
-sid <- 'snRNA_GSM4119521_SF10022'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+sid <- 'snRNA_GSM4119521_SF10022_GBM'
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
+
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
 percent.mito_object1 <- Matrix::colSums(x = GetAssayData(object = object_1, slot="counts")[mito.features_object1,]) / Matrix::colSums(x = GetAssayData(object = object_1, slot = "counts"))
@@ -374,7 +375,7 @@ FeaturePlot(object = object_1, features = "ITGA1") # endo + peri?
 
 
 
-# snRNA SF10127 [LowQ] ----
+# snRNA SF10127 GBM [LowQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -386,10 +387,10 @@ FeaturePlot(object = object_1, features = "ITGA1") # endo + peri?
 rm(sid, object_1)
 gc()
 
-
-sid <- 'snRNA_GSM4119522_SF10127'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+sid <- 'snRNA_GSM4119522_SF10127_GBM'
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
+
 
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -470,7 +471,7 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters")
 
 
-# snRNA SF11979sn [LowQ] ----
+# snRNA SF11979 GBM [LowQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: IDHR132H WT GBM
@@ -482,8 +483,8 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 rm(sid, object_1)
 gc()
 
-sid <- 'snRNA_GSM4119523_SF11979sn'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+sid <- 'snRNA_GSM4119523_SF11979_GBM'
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -557,7 +558,7 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters")
 
 
-# snRNA SF12090 [T,OD,MG - LowQ] ----
+# snRNA SF12090 GBM [T,OD,MG - LowQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: IDHR132H WT GBM
@@ -569,8 +570,8 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 rm(sid, object_1)
 gc()
 
-sid <- 'snRNA_GSM4119524_SF12090'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+sid <- 'snRNA_GSM4119524_SF12090_GBM'
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -645,7 +646,7 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 
 
 
-# snRNA SF12264 :: T,MG,TC+,OD [MHQ] ----
+# snRNA SF12264 GBM :: T,MG,TC+,OD [MHQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -658,7 +659,7 @@ rm(sid, object_1)
 gc()
 
 sid <- 'snRNA_GSM4119525_SF12264'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -995,7 +996,7 @@ FeaturePlot(object = object_1, features = "CD248",order=T)
 
 
 
-## snRNA SF4400 :: LowQ ----
+# snRNA SF4400 GBM :: LowQ ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -1009,7 +1010,7 @@ rm(sid, object_1)
 gc()
 
 sid <- 'snRNA_GSM4119526_SF4400'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -1083,7 +1084,7 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = 1.6, group.by = "seurat_clusters")
 
 
-# snRNA SF4297 :: T,OD,MG+,NE+,AC+ [MQ] ----
+# snRNA SF4297 GBM :: T,OD,MG+,NE+,AC+ [MQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -1097,7 +1098,7 @@ rm(sid, object_1)
 gc()
 
 sid <- 'snRNA_GSM4119527_SF4297'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -1429,7 +1430,7 @@ FeaturePlot(object = object_1, features = c("CFH"))
 
 
 
-## snRNA SF6996 ----
+# snRNA SF6996 GBM :: ??  ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -1443,7 +1444,7 @@ rm(sid, object_1)
 gc()
 
 sid <- 'snRNA_GSM4119528_SF6996'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -1520,22 +1521,11 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 
 # tmp.12 <- FindMarkers(object_1, ident.1 = 12) # PLP1, OPALIN, mitochondrial, dubbele kernen?
 
-#### C5 (down) :: TAM? ----
-
-DotPlot(object = object_1, features = c(C5),  group.by = "seurat_clusters") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-
-RidgePlot(object = object_1, features = c(C5), group.by = "seurat_clusters",stack=T)
-VlnPlot(object = object_1, features = c(C5), group.by = "seurat_clusters",stack=T)
-
-
-FeaturePlot(object = object_1, features = C5)
 
 
 
 
-
-
-# snRNA SF9259[S+R] :: T-,OD++,TM ----
+# snRNA SF9259[S+R] GBM :: T-,OD++,TM ----
 
 #@todo pooling of the 2?
 
@@ -1550,11 +1540,11 @@ rm(sid, object_1)
 gc()
 
 sid <- 'snRNA_GSM4119529_SF9259R'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 sid <- 'snRNA_GSM4119530_SF9259S'
-object_1.tmp <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+object_1.tmp <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1.tmp <- CreateSeuratObject(counts = object_1.tmp, min.cells = 3, min.features = 200, project="Couturier")
 
 object_1.m <- merge(object_1, y=object_1.tmp, add.cell.ids = c("1of2","2of2"), project="Couturier")
@@ -1775,7 +1765,7 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 
-# scRNA SF11979 :: [LowQ] ----
+# scRNA SF11979 GBM :: [LowQ] ----
 # best wat cellen maar heel weinig reads?
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4119531
 # tissue: glioma
@@ -1791,7 +1781,7 @@ gc()
 
 sid <- 'scRNA_GSM4119531_SF11979'
 
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"), gene.column = 1)
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -1997,7 +1987,7 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 
-# scRNA SF11977 :: OD [LowQ] ----
+# scRNA SF11977 GBM :: OD [LowQ] ----
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4119532
 # tissue: glioma
 # progression: Primary
@@ -2013,7 +2003,7 @@ gc()
 sid <- 'scRNA_GSM4119532_SF11977'
 
 
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"), gene.column = 1)
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -2094,7 +2084,7 @@ tmp.t <- FindMarkers(object_1, ident.1 = c(0,1,2,3,5,7))
 
 
 
-# scRNA SF11956 :: [LowQ] ----
+# scRNA SF11956 GBM :: [LowQ] ----
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4119533
 # tissue: glioma
 # progression: Primary
@@ -2109,7 +2099,7 @@ gc()
 sid <- 'scRNA_GSM4119533_SF11956'
 
 
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"), gene.column = 1)
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -2184,7 +2174,7 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 
 
 
-# scRNA SF11644 :: T,TC,OD,TM,EN/PE [MQ] ----
+# scRNA SF11644 GBM :: T,TC,OD,TM,EN/PE [MQ] ----
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4119534
 # tissue: glioma
 # progression: Primary
@@ -2198,7 +2188,7 @@ gc()
 
 sid <- 'scRNA_GSM4119534_SF11644'
 
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"), gene.column = 1)
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
@@ -2440,7 +2430,7 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 
-# scRNA SF11681 ----
+# scRNA SF11681 GBM ----
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4658373
 # progression: Recurrent
 # strain: GBM, IDH1R132H WT
@@ -2454,7 +2444,7 @@ gc()
 sid <- 'scRNA_GSM4658373_SF11681'
 
 
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE138794_Diaz/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
 
