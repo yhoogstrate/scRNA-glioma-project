@@ -658,7 +658,7 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 rm(sid, object_1)
 gc()
 
-sid <- 'snRNA_GSM4119525_SF12264'
+sid <- 'snRNA_GSM4119525_SF12264_GBM'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
@@ -1009,7 +1009,7 @@ FeaturePlot(object = object_1, features = "CD248",order=T)
 rm(sid, object_1)
 gc()
 
-sid <- 'snRNA_GSM4119526_SF4400'
+sid <- 'snRNA_GSM4119526_SF4400_GBM'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
@@ -1097,7 +1097,7 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = 1.6, group.by = "s
 rm(sid, object_1)
 gc()
 
-sid <- 'snRNA_GSM4119527_SF4297'
+sid <- 'snRNA_GSM4119527_SF4297_GBM'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
@@ -1443,7 +1443,7 @@ FeaturePlot(object = object_1, features = c("CFH"))
 rm(sid, object_1)
 gc()
 
-sid <- 'snRNA_GSM4119528_SF6996'
+sid <- 'snRNA_GSM4119528_SF6996_GBM'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
@@ -1539,11 +1539,11 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 rm(sid, object_1)
 gc()
 
-sid <- 'snRNA_GSM4119529_SF9259R'
+sid <- 'snRNA_GSM4119529_SF9259R_GBM'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
-sid <- 'snRNA_GSM4119530_SF9259S'
+sid <- 'snRNA_GSM4119530_SF9259S_GBM'
 object_1.tmp <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1.tmp <- CreateSeuratObject(counts = object_1.tmp, min.cells = 3, min.features = 200, project="Couturier")
 
@@ -1779,7 +1779,7 @@ rm(sid, object_1)
 gc()
 
 
-sid <- 'scRNA_GSM4119531_SF11979'
+sid <- 'scRNA_GSM4119531_SF11979_GBM'
 
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
@@ -2000,9 +2000,7 @@ rm(sid, object_1)
 gc()
 
 
-sid <- 'scRNA_GSM4119532_SF11977'
-
-
+sid <- 'scRNA_GSM4119532_SF11977_GBM'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
@@ -2096,9 +2094,7 @@ tmp.t <- FindMarkers(object_1, ident.1 = c(0,1,2,3,5,7))
 rm(sid, object_1)
 gc()
 
-sid <- 'scRNA_GSM4119533_SF11956'
-
-
+sid <- 'scRNA_GSM4119533_SF11956_GBM'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
@@ -2186,8 +2182,8 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 rm(sid, object_1)
 gc()
 
-sid <- 'scRNA_GSM4119534_SF11644'
 
+sid <- 'scRNA_GSM4119534_SF11644_GBM'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
@@ -2441,9 +2437,8 @@ FeaturePlot(object = object_1, features = "CD248")
 rm(sid, object_1)
 gc()
 
-sid <- 'scRNA_GSM4658373_SF11681'
 
-
+sid <- 'scRNA_GSM4658373_SF11681_GBM'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
@@ -2677,7 +2672,27 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 # scRNA SF11136 LGG :: ----
+
+rm(sid, object_1)
+gc()
+
+
+sid <- 'scRNA_GSM4119535_SF11136_LGG'
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
+
+
 # scRNA SF12017 LGG :: ----
+
+
+rm(sid, object_1)
+gc()
+
+sid <- 'scRNA_GSM4119536_SF12017_LGG'
+object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
+object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
+
+
+
 # scRNA SF11964 LGG :: ----
 # scRNA SF11949 ODG :: ----
 # scRNA SF11612 ODG :: ----
