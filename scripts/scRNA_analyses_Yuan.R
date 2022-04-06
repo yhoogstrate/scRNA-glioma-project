@@ -39,9 +39,10 @@ annotations.sub <- annotation.genes[, c("symbol","seq_name","gene_seq_start","ge
 # write.table(annotations.sub, file = "data/GSE103224_Yuan/annotation_genes.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote=F)
 
 
-# GSE103224 :: Yuan J. et. al ----
+# :: GSE103224 :: Yuan J. et. al :: ----
 
-# Load the public data files:
+# Load and convert to Seurat/10x ----
+
 
 if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
   GSE103224 <- readRDS("tmp/GSE103224.scRNA.counts.Rds")
@@ -71,11 +72,11 @@ if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
   `colnames<-`(c("ENS", "HGNC", paste0("GSM2758476_PJ032.cell.",(1:(ncol(.)-2))+2) ))
   
   # Glioblastoma, recurrent, dh1 status: wt, egfr status: amplified in initial resection
-  g <- read.delim("data/scRNA/GSE103224_Yuan/GSM2758477_PJ035.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
+  g <- read.delim("data/GSE103224_Yuan/GSM2758477_PJ035.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
   `colnames<-`(c("ENS", "HGNC", paste0("GSM2758477_PJ035.cell.",(1:(ncol(.)-2))+2) ))
   
   # Glioblastoma, WHO grade IV, IDH-wt, EGFR-non ampli
-  h <- read.delim("data/scRNA/GSE103224_Yuan/GSM2940098_PJ048.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
+  h <- read.delim("data/GSE103224_Yuan/GSM2940098_PJ048.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
     `colnames<-`(c("ENS", "HGNC", paste0("GSM2940098_PJ048.cell.",(1:(ncol(.)-2))+2) ))
 
 
@@ -92,11 +93,9 @@ if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
   
   saveRDS(GSE103224, file="tmp/GSE103224.scRNA.counts.Rds")
   
-  rm(b,c,d,f,g,h)
+  rm(a,b,c,d,e,f,g,h)
 }
 
-
-## Convert to seurat/10x ----
 
 
 GSE103224.genes <- GSE103224 %>%
@@ -159,14 +158,14 @@ rm(GSE103224, GSE103224.cell.ids, GSE103224.genes)
 gc()
 
 
-## A :: LGG?, WHO grade IV, idh1: R132H ----
-## A :: GSM2758472_PJ016 :: ??  ----
+# A :: LGG?, WHO grade IV, idh1: R132H ----
+# A :: GSM2758472_PJ016 :: ??  ----
 
 
 
-## B :: grade IV, idh1: wt, EGFR-ampli ----
-## B :: GSM2758472_PJ017 :: T,MG,TC ---- 
-# Glioblastoma, WHO grade IV, idh1 status: wt, EGFR-ampli
+# B :: grade IV, idh1: wt, EGFR-ampli ----
+# B :: GSM2758472_PJ017 :: T,MG,TC ---- 
+
 
 rm(object_1)
 gc()
@@ -424,9 +423,9 @@ FeaturePlot(object = object_1, features = "TRBC2")
 
 
 
+# C :: GBM, WHO grade IV, idh1: wt, EGFR-non ampli ----
+# C :: GSM2758473_PJ018 :: T,MG,OL,EN,PE ----
 
-## C :: GSM2758473_PJ018 :: T,MG,OL,EN,PE ----
-# Glioblastoma, WHO grade IV, idh1 status: wt, EGFR-non ampli
 
 rm(object_1, sid)
 gc()
