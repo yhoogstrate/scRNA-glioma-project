@@ -170,6 +170,31 @@ gc()
 #' idh1 status: R132H
 #' egfr status: not amplified
 
+## UMAP clustering ----
+
+object_1 <- RunUMAP(object_1, dims = 1:d)
+object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
+
+
+
+object_1 <- FindClusters(object_1, resolution = 1)
+# levels(object_1$seurat_clusters) <- gsub("^(0|2|7|8)$","\\1. T",levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(1|3|4|5|6)$","\\1. TAM/MG",levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(9)$","\\1. TC",levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters)
+# object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
+#   "0. T","2. T","7. T","8. T",
+#   "1. TAM/MG","3. TAM/MG","4. TAM/MG","5. TAM/MG","6. TAM/MG", 
+#   "9. TC"
+# ))
+
+
+
+# DimPlot(object_1, reduction = "tsne", label = TRUE, pt.size = .8, group.by = "seurat_clusters")
+DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .8, group.by = "seurat_clusters")  +
+  guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
+  labs(subtitle=sid)
+
 
 
 rm(object_1)
@@ -239,12 +264,17 @@ head(Idents(object_1), 50)
 
 object_1 <- RunTSNE(object_1, dims = 1:d)
 
+# 
 
-#### 1. Tumor (+) ----
+## 1. Tumor (+) ----
+
+p1 <- FeaturePlot(object = object_1, features = "GFAP") # Tumor/AC
+p2 <- FeaturePlot(object = object_1, features = "OLIG1") # Tumor/OPC+NPC1
+p1 + p2
+
 
 FeaturePlot(object = object_1, features = "GFAP") # Tumor/AC
 FeaturePlot(object = object_1, features = "OLIG1") # Tumor/OPC+NPC1
-
 
 FeaturePlot(object = object_1, features = "ETV1") # Tumor
 FeaturePlot(object = object_1, features = "CDK4") # Tumor
@@ -255,30 +285,75 @@ FeaturePlot(object = object_1, features = "VIM") # Tumor/MES
 FeaturePlot(object = object_1, features = "STMN2") # Tumor
 
 
-### UMAP clustering ----
 
-object_1 <- RunUMAP(object_1, dims = 1:d)
-object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
+## 2A. TAM/mg/monocytes (+) ----
 
 
-
-object_1 <- FindClusters(object_1, resolution = 1)
-# levels(object_1$seurat_clusters) <- gsub("^(0|2|7|8)$","\\1. T",levels(object_1$seurat_clusters))
-# levels(object_1$seurat_clusters) <- gsub("^(1|3|4|5|6)$","\\1. TAM/MG",levels(object_1$seurat_clusters))
-# levels(object_1$seurat_clusters) <- gsub("^(9)$","\\1. TC",levels(object_1$seurat_clusters))
-# levels(object_1$seurat_clusters)
-# object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
-#   "0. T","2. T","7. T","8. T",
-#   "1. TAM/MG","3. TAM/MG","4. TAM/MG","5. TAM/MG","6. TAM/MG", 
-#   "9. TC"
-# ))
+FeaturePlot(object = object_1, features = c("CD163")) # TAM/mg
+FeaturePlot(object = object_1, features = "CD14") # TAM/mg
+FeaturePlot(object = object_1, features = c("ITGB2"))
+FeaturePlot(object = object_1, features = c("C1QC"))
 
 
 
-# DimPlot(object_1, reduction = "tsne", label = TRUE, pt.size = .8, group.by = "seurat_clusters")
-DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .8, group.by = "seurat_clusters")  +
-  guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
-  labs(subtitle=sid)
+## 2B. Til/T-cell (+) ----
+
+FeaturePlot(object = object_1, features = "CD3D")
+FeaturePlot(object = object_1, features = "TRBC2")
+FeaturePlot(object = object_1, features = "CD2")
+
+
+## 3. Neurons (-) ----
+
+
+FeaturePlot(object = object_1, features = "RBFOX3")
+# FeaturePlot(object = object_1, features = "GABRB2")
+# FeaturePlot(object = object_1, features = "RBFOX1")
+# FeaturePlot(object = object_1, features = "DDN")
+# FeaturePlot(object = object_1, features = "TNNT2")
+# FeaturePlot(object = object_1, features = "TMEM130")
+# FeaturePlot(object = object_1, features = "GABRG2")
+# FeaturePlot(object = object_1, features = "GABRA1")
+
+
+## 4. Oligodendrocytes (-) ----
+
+FeaturePlot(object = object_1, features = "TMEM144")
+FeaturePlot(object = object_1, features = "MOG")
+#FeaturePlot(object = object_1, features = "OPALIN") # - clear small cluster
+FeaturePlot(object = object_1, features = "PLP1")
+
+
+## 5A. Endothelial (?) ----
+
+FeaturePlot(object = object_1, features = "ABCB1")
+FeaturePlot(object = object_1, features = "CD34")
+FeaturePlot(object = object_1, features = "FLT4")
+FeaturePlot(object = object_1, features = "TIE1") # meh
+FeaturePlot(object = object_1, features = "ITGA1") # endo + peri?
+
+
+## 5B. Pericytes (3 cells ?) ----
+
+FeaturePlot(object = object_1, features = "RGS5")
+FeaturePlot(object = object_1, features = "PDGFRB")
+FeaturePlot(object = object_1, features = "CD248")
+
+
+FeaturePlot(object = object_1, features = "FOXJ1") # ependymal cells? - https://www.cell.com/cell/pdf/S0092-8674(18)30395-7.pdf
+
+
+## 6. Til/T-cell (+) ----
+
+FeaturePlot(object = object_1, features = "CD3D")
+FeaturePlot(object = object_1, features = "CD2")
+FeaturePlot(object = object_1, features = "TRBC2")
+
+# Deze werken nergens op T-cellen (?):
+# FeaturePlot(object = object_1, features = "CACHD1")
+# FeaturePlot(object = object_1, features = "BMPR1B")
+# FeaturePlot(object = object_1, features = "GPR37L1")
+
 
 
 
