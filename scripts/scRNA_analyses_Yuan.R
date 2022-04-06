@@ -87,11 +87,13 @@ if(file.exists("cache/GSE103224.scRNA.counts.Rds")) {
     dplyr::left_join(b %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
     dplyr::left_join(c %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
     dplyr::left_join(d %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
+    dplyr::left_join(e %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
     dplyr::left_join(f %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
     dplyr::left_join(g %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS'))%>%
     dplyr::left_join(h %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS'))
   
   saveRDS(GSE103224, file="cache/GSE103224.scRNA.counts.Rds")
+  
   
   rm(a,b,c,d,e,f,g,h)
 }
@@ -153,7 +155,6 @@ for(sample in unique(gsub(".cell.+$","",GSE103224.cell.ids ))) {
   gc()
 }
 
-
 rm(GSE103224, GSE103224.cell.ids, GSE103224.genes)
 gc()
 
@@ -168,6 +169,118 @@ gc()
 #' diagnosis: Glioblastoma, WHO grade IV
 #' idh1 status: R132H
 #' egfr status: not amplified
+
+
+
+rm(object_1)
+gc()
+
+sid <- 'GSM2758471_PJ016'
+object_1 <- Read10X(data.dir = paste0("data/GSE103224_Yuan/",sid))
+object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project = "glioma")
+
+mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
+percent.mito_object1 <- Matrix::colSums(x = GetAssayData(object = object_1, slot="counts")[mito.features_object1,]) / Matrix::colSums(x = GetAssayData(object = object_1, slot = "counts"))
+object_1[["percent.mito"]] <- percent.mito_object1
+VlnPlot(object = object_1, features = c("nFeature_RNA", "nCount_RNA", "percent.mito"), ncol = 3, pt.size = 0.5, group.by = "orig.ident")
+
+# does not seem to need further filters
+# object_1 <- subset(x = object_1, subset = 
+#                      nFeature_RNA > 0 & nFeature_RNA < 8000 &
+#                      nCount_RNA > 200 & nCount_RNA <10000 &
+#                      percent.mito < 0.025)
+object_1 <- NormalizeData(object = object_1, normalization.method = "LogNormalize", scale.factor = 1e4)
+object_1 <- FindVariableFeatures(object = object_1, selection.method = "vst", nfeatures = 2000)
+object_1[["state"]] <- "P1" 
+
+
+print(paste0("Median(nCount_RNA) in ",sid, " = ",round(median(object_1$nCount_RNA))))
+print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeature_RNA))))
+
+
+top10 <- head(VariableFeatures(object_1), 10)
+
+# plot variable features with and without labels
+
+plot1 <- VariableFeaturePlot(object_1)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+#CombinePlots(plots = list(plot1, plot2))     
+plot2
+
+### scaling of data
+#Shifts the expression of each gene, so that the mean expression across cells is 0
+#Scales the expression of each gene, so that the variance across cells is 1
+#This step gives equal weight in downstream analyses, so that highly-expressed genes do not dominate
+#The results of this are stored in pbmc[["RNA"]]@scale.data
+
+all.genes <- rownames(object_1)
+object_1 <- ScaleData(object_1, features = all.genes)
+
+### PCA plot ---
+
+object_1 <- RunPCA(object_1, features = VariableFeatures(object = object_1))
+print(object_1[["pca"]], dims = 1:5, nfeatures = 5)
+VizDimLoadings(object_1, dims = 1:2, reduction = "pca")
+DimPlot(object_1, reduction = "pca")
+
+#### estimation of the number of principle components in your dataset
+
+ElbowPlot(object_1, ndims=40)
+
+
+### cluster the cells
+
+d <- 14
+
+object_1 <- FindNeighbors(object_1, dims = 1:d)
+object_1 <- FindClusters(object_1, resolution = 1)
+head(Idents(object_1), 50)
+
+
+object_1 <- RunTSNE(object_1, dims = 1:d)
+
+
+#### 1. Tumor (+) ----
+
+FeaturePlot(object = object_1, features = "GFAP") # Tumor/AC
+FeaturePlot(object = object_1, features = "OLIG1") # Tumor/OPC+NPC1
+
+
+FeaturePlot(object = object_1, features = "ETV1") # Tumor
+FeaturePlot(object = object_1, features = "CDK4") # Tumor
+FeaturePlot(object = object_1, features = "EGFR") # Tumor
+
+FeaturePlot(object = object_1, features = "S100B") # Tumor/AC
+FeaturePlot(object = object_1, features = "VIM") # Tumor/MES
+FeaturePlot(object = object_1, features = "STMN2") # Tumor
+
+
+### UMAP clustering ----
+
+object_1 <- RunUMAP(object_1, dims = 1:d)
+object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
+
+
+
+object_1 <- FindClusters(object_1, resolution = 1)
+# levels(object_1$seurat_clusters) <- gsub("^(0|2|7|8)$","\\1. T",levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(1|3|4|5|6)$","\\1. TAM/MG",levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(9)$","\\1. TC",levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters)
+# object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
+#   "0. T","2. T","7. T","8. T",
+#   "1. TAM/MG","3. TAM/MG","4. TAM/MG","5. TAM/MG","6. TAM/MG", 
+#   "9. TC"
+# ))
+
+
+
+# DimPlot(object_1, reduction = "tsne", label = TRUE, pt.size = .8, group.by = "seurat_clusters")
+DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .8, group.by = "seurat_clusters")  +
+  guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
+  labs(subtitle=sid)
+
+
 
 
 # B :: GBM, grade IV, idh1: wt, EGFR-ampli ----
@@ -186,7 +299,7 @@ gc()
 
 
 sid <- 'GSM2758472_PJ017'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE103224_Yuan/",sid))
+object_1 <- Read10X(data.dir = paste0("data/GSE103224_Yuan/",sid))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project = "glioma")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -450,7 +563,7 @@ rm(object_1, sid)
 gc()
 
 sid <- 'GSM2758473_PJ018'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE103224_Yuan/",sid))
+object_1 <- Read10X(data.dir = paste0("data/GSE103224_Yuan/",sid))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project = "glioma")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -743,7 +856,7 @@ FeaturePlot(object = object_1, features = "TRBC2")
 rm(object_1, sid)
 
 sid <- 'GSM2758474_PJ025'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE103224_Yuan/",sid))
+object_1 <- Read10X(data.dir = paste0("data/GSE103224_Yuan/",sid))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project = "glioma")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -1075,7 +1188,7 @@ rm(object_1, sid)
 gc()
 
 sid <- "GSM2758476_PJ032"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE103224_Yuan/",sid))
+object_1 <- Read10X(data.dir = paste0("data/GSE103224_Yuan/",sid))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project = "glioma")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -1288,7 +1401,7 @@ gc()
 
 
 sid <- 'GSM2758477_PJ035'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE103224_Yuan/",sid))
+object_1 <- Read10X(data.dir = paste0("data/GSE103224_Yuan/",sid))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project = "glioma")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -1553,15 +1666,15 @@ head(dge,15)
 
 
 # write.table(object_1@assays$RNA@counts %>% as.data.frame(stringsAsFactors=F),
-#   file = paste0("data/scRNA/GSE103224_Yuan/",sid,'/matrix.only-included-cells.txt'),
+#   file = paste0("data/GSE103224_Yuan/",sid,'/matrix.only-included-cells.txt'),
 #   row.names = T, col.names = T, sep = "\t",quote = FALSE )
 
 
-infercnv_obj <- CreateInfercnvObject(raw_counts_matrix=paste0("data/scRNA/GSE103224_Yuan/",sid,'/matrix.only-included-cells.txt'),
-                                     annotations_file=paste0("data/scRNA/GSE103224_Yuan/",sid,'/seurat_cluster_annotations.txt'),
-                                     gene_order_file='data/scRNA/GSE103224_Yuan/annotation_genes.txt',
-                                     #annotations_file=system.file("extdata", "data/scRNA/GSE103224_Yuan/GSM2758477_PJ035/seurat_cluster_annotations.txt", package = "infercnv"),
-                                     #gene_order_file=system.file("extdata", "data/scRNA/GSE103224_Yuan/annotation_genes.txt", package = "infercnv"),
+infercnv_obj <- CreateInfercnvObject(raw_counts_matrix=paste0("data/GSE103224_Yuan/",sid,'/matrix.only-included-cells.txt'),
+                                     annotations_file=paste0("data/GSE103224_Yuan/",sid,'/seurat_cluster_annotations.txt'),
+                                     gene_order_file='data/GSE103224_Yuan/annotation_genes.txt',
+                                     #annotations_file=system.file("extdata", "data/GSE103224_Yuan/GSM2758477_PJ035/seurat_cluster_annotations.txt", package = "infercnv"),
+                                     #gene_order_file=system.file("extdata", "data/GSE103224_Yuan/annotation_genes.txt", package = "infercnv"),
                                      ref_group_names=c("SeuratCluster7","SeuratCluster8","SeuratCluster4")) 
 
 
@@ -1588,7 +1701,7 @@ rm(object_1, sid)
 gc()
 
 sid <- 'GSM2940098_PJ048'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/GSE103224_Yuan/",sid))
+object_1 <- Read10X(data.dir = paste0("data/GSE103224_Yuan/",sid))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project = "glioma")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
