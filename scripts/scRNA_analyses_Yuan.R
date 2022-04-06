@@ -44,12 +44,12 @@ annotations.sub <- annotation.genes[, c("symbol","seq_name","gene_seq_start","ge
 # Load and convert to Seurat/10x ----
 
 
-if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
-  GSE103224 <- readRDS("tmp/GSE103224.scRNA.counts.Rds")
+if(file.exists("cache/GSE103224.scRNA.counts.Rds")) {
+  GSE103224 <- readRDS("cache/GSE103224.scRNA.counts.Rds")
 } else {
   # diagnosis: Glioblastoma, WHO grade IV - idh1 status: R132H
   a <- read.delim("data/GSE103224_Yuan/GSM2758471_PJ016.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
-  `colnames<-`(c("ENS", "HGNC", paste0("GSM2758471.cell.",(1:(ncol(.)-2))+2) ))
+  `colnames<-`(c("ENS", "HGNC", paste0("GSM2758471_PJ016.cell.",(1:(ncol(.)-2))+2) ))
   
   # Glioblastoma, WHO grade IV, idh1 status: wt, EGFR-ampli
   b <- read.delim("data/GSE103224_Yuan/GSM2758472_PJ017.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
@@ -65,7 +65,7 @@ if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
   
   # Anaplastic Astrocytoma, WHO grade III, IDH-wt, EGFR-non ampli
   e <- read.delim("data/GSE103224_Yuan/GSM2758475_PJ030.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
-  `colnames<-`(c("ENS", "HGNC", paste0("GSM2758475.cell.",(1:(ncol(.)-2))+2) ))
+  `colnames<-`(c("ENS", "HGNC", paste0("GSM2758475_PJ030.cell.",(1:(ncol(.)-2))+2) ))
   
   # GBM RECURRENT - IDH-wt, EGFR ampli
   f <- read.delim("data/GSE103224_Yuan/GSM2758476_PJ032.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
@@ -91,7 +91,7 @@ if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
     dplyr::left_join(g %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS'))%>%
     dplyr::left_join(h %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS'))
   
-  saveRDS(GSE103224, file="tmp/GSE103224.scRNA.counts.Rds")
+  saveRDS(GSE103224, file="cache/GSE103224.scRNA.counts.Rds")
   
   rm(a,b,c,d,e,f,g,h)
 }
@@ -158,13 +158,27 @@ rm(GSE103224, GSE103224.cell.ids, GSE103224.genes)
 gc()
 
 
+
+
 # A :: LGG?, WHO grade IV, idh1: R132H ----
 # A :: GSM2758472_PJ016 :: ??  ----
+#' age: 49
+#' gender: Female
+#' location: right frontal
+#' diagnosis: Glioblastoma, WHO grade IV
+#' idh1 status: R132H
+#' egfr status: not amplified
 
 
-
-# B :: grade IV, idh1: wt, EGFR-ampli ----
+# B :: GBM, grade IV, idh1: wt, EGFR-ampli ----
 # B :: GSM2758472_PJ017 :: T,MG,TC ---- 
+#' age: 62
+#' gender: Male
+#' location: left temporal
+#' diagnosis: Glioblastoma, WHO grade IV
+#' idh1 status: wt
+#' egfr status: amplified
+
 
 
 rm(object_1)
@@ -425,7 +439,12 @@ FeaturePlot(object = object_1, features = "TRBC2")
 
 # C :: GBM, WHO grade IV, idh1: wt, EGFR-non ampli ----
 # C :: GSM2758473_PJ018 :: T,MG,OL,EN,PE ----
-
+#' age: 65
+#' gender: Male
+#' location: left temporal
+#' diagnosis: Glioblastoma, WHO grade IV
+#' idh1 status: wt
+#' egfr status: not amplified
 
 rm(object_1, sid)
 gc()
@@ -711,8 +730,14 @@ FeaturePlot(object = object_1, features = "TRBC2")
 
 
 
-## D :: GSM2758474_PJ025 :: T,MG,TC ----
-# Glioblastoma, WHO grade IV, idh1 status: wt, EGFR-ampli
+# D :: GBM, WHO grade IV, idh1 status: wt, EGFR-ampli ----
+# D :: GSM2758474_PJ025 :: T,MG,TC ----
+#' age: 74
+#' gender: Male
+#' location: right frontal
+#' diagnosis: Glioblastoma, WHO grade IV
+#' idh1 status: wt
+#' egfr status: amplified
 
 
 rm(object_1, sid)
@@ -1024,13 +1049,27 @@ FeaturePlot(object = object_1, features = "GFAP")
 
 
 
-## F :: GSM2758476_PJ032 :: T,MG ----
-# age: 63
-# gender: Female
-# location: left temporal
-# diagnosis: Glioblastoma, recurrent
-# idh1 status: wt
-# egfr status: amplified in recurrent tumor
+# E :: AA, grade III, IDH: wt, EGFR: non-ampli ----
+# E :: GSM2758475_PJ030 :: ?? ----
+#' age: 56
+#' gender: Female
+#' location: left temporal
+#' diagnosis: Anaplastic Astrocytoma, WHO grade III
+#' idh1 status: wt
+#' egfr status: not amplified
+###  Anaplastic Astrocytoma, WHO grade III, IDH-wt, EGFR-non ampli
+###  old histology? No IDH-mut?
+
+
+
+# F :: GBM (recurrent), IDH-wt, EGFR ampli ----
+# F :: GSM2758476_PJ032 :: T,MG ----
+#' age: 63
+#' gender: Female
+#' location: left temporal
+#' diagnosis: Glioblastoma, recurrent
+#' idh1 status: wt
+#' egfr status: amplified in recurrent tumor
 
 rm(object_1, sid)
 gc()
@@ -1235,9 +1274,14 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 
-## G :: GSM2758477_PJ035 :: T,MG,EN,PE ----
-# Glioblastoma, IDH-wt, recurrent, egfr status: amplified in initial resection
-
+# G :: GBM recurrent, IDH-wt, EGFR: ampli in initial ----
+# G :: GSM2758477_PJ035 :: T,MG,EN,PE ----
+#' age: 50
+#' gender: Male
+#' location: left temporal
+#' diagnosis: Glioblastoma, recurrent
+#' idh1 status: wt
+#' egfr status: amplified in initial resection
 
 rm(object_1, sid)
 gc()
@@ -1497,38 +1541,6 @@ FeaturePlot(object = object_1, features = "NDRG1")
 
 
 
-#### C3 :: endothelial (down) ----
-
-
-C3 <- c('VWF', 'TIE1', 'HIGD1B', 'MMRN1', 'CYSLTR2', 'MMP25','FLT4', 'BCL6B', 'GRAP', 'LAMC3', 'DPEP1', 'PXDNL', 'ANGPT2',
-        'PALD1', 'ADGRD1', 'GBP6', 'SLC52A3', 'CLDN5', 'VWA2', 'ABCB1', 'THSD7B', 'SPINK8', 'FOXQ1', 'ZIC3', 'NODAL')
-
-endo <- read_xlsx("data/McKenzie et al. Gene expression different cell types.xlsx", sheet='top_human_specificity') %>%
-  dplyr::select(c('grand_mean', 'gene', 'Celltype')) %>%
-  dplyr::filter(Celltype == 'end') %>% 
-  dplyr::arrange(desc(grand_mean)) %>%
-  dplyr::filter(gene %in% all.genes ) %>%
-  dplyr::slice_head(n=25) %>%
-  dplyr::mutate(grand_mean = NULL) %>% 
-  dplyr::pull(gene)
-
-
-C3.only <- setdiff(C3, endo)
-C3.and.endo <- intersect(endo, C3)
-endo.only <- setdiff(endo, C3)
-
-
-DotPlot(object = object_1, features = list('C3'=C3.only, 'C3+endo'= C3.and.endo, 'endo'=endo.only,'pericyte'=c('PDGFRB','CD248','RGS5')), group.by = "seurat_clusters") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  labs(x = paste0("Features [C3 & top25 McKenzy endothelial cell markers] in: ",sid))
-
-
-ggsave(paste0("output/figures/scRNA/Yuan/",sid,"_C3.pdf"),width=7.5, height=3,scale=2)
-ggsave(paste0("output/figures/scRNA/Yuan/",sid,"_C3.png"),width=7.5, height=3,scale=2)
-
-
-
-
 
 
 ### Find DE genes voor 5 ----
@@ -1562,8 +1574,15 @@ infercnv_obj = infercnv::run(infercnv_obj,
 )
 
 
-## H :: GSM2940098_PJ048 :: T,OD,EN,PE ----
-# Glioblastoma, WHO grade IV, IDH-wt, EGFR-non ampli
+# H :: GSM2940098_PJ048 :: T,OD,EN,PE ----
+# H :: GBM, WHO grade IV, IDH-wt, EGFR-non ampli ----
+#' age: 59
+#' gender: Male
+#' location: right parietal
+#' diagnosis: Glioblastoma, WHO grade IV
+#' idh1 status: wt
+#' egfr status: not amplified
+
 
 rm(object_1, sid)
 gc()
