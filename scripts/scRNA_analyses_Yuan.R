@@ -1,5 +1,13 @@
 #!/usr/bin/env R
 
+
+# Data matching to the following manuscript:
+# 
+# Yuan J, Levitin HM, Frattini V, Bush EC et al. Single-cell transcriptome analysis of lineage diversity in high-grade glioma. Genome Med 2018 Jul 24;10(1):57. PMID: 30041684
+# 
+# Data accessible at: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE103224
+
+
 # load libs ----
 
 
@@ -27,38 +35,39 @@ annotations.sub <- annotation.genes[, c("symbol","seq_name","gene_seq_start","ge
   dplyr::filter(!duplicated(symbol)) %>%
   dplyr::filter(seq_name %in% c('chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9','chr10','chr11','chr12','chr13','chr14','chr15','chr16','chr17','chr18','chr19','chr20','chr21','chr22','chr23','chrX','chrY'))
 
-write.table(annotations.sub, file = "data/scRNA/GSE103224_Yuan/annotation_genes.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote=F)
+
+# write.table(annotations.sub, file = "data/GSE103224_Yuan/annotation_genes.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote=F)
 
 
 # GSE103224 :: Yuan J. et. al ----
 
-
+# Load the public data files:
 
 if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
   GSE103224 <- readRDS("tmp/GSE103224.scRNA.counts.Rds")
 } else {
   # diagnosis: Glioblastoma, WHO grade IV - idh1 status: R132H
-  #a <- read.delim("data/scRNA/GSE103224_Yuan/GSM2758471_PJ016.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
-  #`colnames<-`(c("ENS", "HGNC", paste0("GSM2758471.cell.",(1:(ncol(.)-2))+2) ))
+  a <- read.delim("data/GSE103224_Yuan/GSM2758471_PJ016.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
+  `colnames<-`(c("ENS", "HGNC", paste0("GSM2758471.cell.",(1:(ncol(.)-2))+2) ))
   
   # Glioblastoma, WHO grade IV, idh1 status: wt, EGFR-ampli
-  b <- read.delim("data/scRNA/GSE103224_Yuan/GSM2758472_PJ017.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
+  b <- read.delim("data/GSE103224_Yuan/GSM2758472_PJ017.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
   `colnames<-`(c("ENS", "HGNC", paste0("GSM2758472_PJ017.cell.",(1:(ncol(.)-2))+2) ))
   
   # Glioblastoma, WHO grade IV, idh1 status: wt, EGFR-non ampli
-  c <- read.delim("data/scRNA/GSE103224_Yuan/GSM2758473_PJ018.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
+  c <- read.delim("data/GSE103224_Yuan/GSM2758473_PJ018.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
   `colnames<-`(c("ENS", "HGNC", paste0("GSM2758473_PJ018.cell.",(1:(ncol(.)-2))+2) ))
   
   # Glioblastoma, WHO grade IV, idh1 status: wt, EGFR-ampli
-  d <- read.delim("data/scRNA/GSE103224_Yuan/GSM2758474_PJ025.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
+  d <- read.delim("data/GSE103224_Yuan/GSM2758474_PJ025.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
   `colnames<-`(c("ENS", "HGNC", paste0("GSM2758474_PJ025.cell.",(1:(ncol(.)-2))+2) ))
   
   # Anaplastic Astrocytoma, WHO grade III, IDH-wt, EGFR-non ampli
-  #e <- read.delim("data/scRNA/GSE103224_Yuan/GSM2758475_PJ030.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
-  #`colnames<-`(c("ENS", "HGNC", paste0("GSM2758475.cell.",(1:(ncol(.)-2))+2) ))
+  e <- read.delim("data/GSE103224_Yuan/GSM2758475_PJ030.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
+  `colnames<-`(c("ENS", "HGNC", paste0("GSM2758475.cell.",(1:(ncol(.)-2))+2) ))
   
   # GBM RECURRENT - IDH-wt, EGFR ampli
-  f <- read.delim("data/scRNA/GSE103224_Yuan/GSM2758476_PJ032.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
+  f <- read.delim("data/GSE103224_Yuan/GSM2758476_PJ032.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
   `colnames<-`(c("ENS", "HGNC", paste0("GSM2758476_PJ032.cell.",(1:(ncol(.)-2))+2) ))
   
   # Glioblastoma, recurrent, dh1 status: wt, egfr status: amplified in initial resection
@@ -68,10 +77,11 @@ if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
   # Glioblastoma, WHO grade IV, IDH-wt, EGFR-non ampli
   h <- read.delim("data/scRNA/GSE103224_Yuan/GSM2940098_PJ048.filtered.matrix.txt", stringsAsFactors = F,header=F) %>% 
     `colnames<-`(c("ENS", "HGNC", paste0("GSM2940098_PJ048.cell.",(1:(ncol(.)-2))+2) ))
-  
-  
 
-  
+
+
+
+
   GSE103224 <- b %>%
   dplyr::left_join(c %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
   dplyr::left_join(d %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
@@ -148,6 +158,12 @@ rm(GSE103224, GSE103224.cell.ids, GSE103224.genes)
 gc()
 
 
+## A :: LGG?, WHO grade IV, idh1: R132H ----
+## A :: GSM2758472_PJ016 :: ??  ----
+
+
+
+## B :: grade IV, idh1: wt, EGFR-ampli ----
 ## B :: GSM2758472_PJ017 :: T,MG,TC ---- 
 # Glioblastoma, WHO grade IV, idh1 status: wt, EGFR-ampli
 
