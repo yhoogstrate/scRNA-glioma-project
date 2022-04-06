@@ -1,5 +1,46 @@
 #!/usr/bin/env R
 
+
+# Data matching to the following manuscript:
+# 
+# Lin Wang, Husam Babikir, Sören Müller, Garima Yagnik, Karin Shamardani, Francisca Catalan, Gary Kohanbash, Beatriz Alvarado, Elizabeth Di Lullo, Arnold Kriegstein, Sumedh Shah, Harsh Wadhwa, Susan M. Chang, Joanna J. Phillips, Manish K. Aghi, Aaron A. Diaz; The Phenotypes of Proliferating Glioblastoma Cells Reside on a Single Axis of Variation. Cancer Discov 1 December 2019; 9 (12): 1708–1719.
+# https://doi.org/10.1158/2159-8290.CD-19-0329
+
+#' ID	Diagnosis	Age	Gender	IDH status	Other mutations	Clonal CNVs	Platform	Experiments	Exome-seq performed
+#' SF10281	Glioblastoma	75	F	wildtype		chr7+, chr10-, chr13-,chr14-	C1	single cell	Y
+#' SF10282	Glioblastoma	65	M	wildtype		chr7+	C1	single cell	Y
+#' SF10345	Glioblastoma	51	F	wildtype		chr7+, chr10-	C1	single cell	Y
+#' SF10360	Glioblastoma	60	M	wildtype		chr7+, chr10-	C1	single cell	Y
+#' SF10718	Glioblastoma	57	M	wildtype		chr4-, chr7+	C1	single cell	N
+#' SF10724	Glioblastoma	50	M	wildtype		chr7p+, chr10-	C1	single cell	N
+#' SF11956	Glioblastoma	63	M	wildtype		chr7p+, chr10-, chr19q-	10x	single cell, snATAC	Y
+#' SF11977	Glioblastoma	61	F	wildtype		chr5+, chr7p+, chr9+, chr19q-	10x	single cell	Y
+#' SF11644	Glioblastoma	57	M	wildtype		chr13-	10x	single cell	Y
+#' SF11979	Glioblastoma	76	F	wildtype		chr7p+, chr10-, chr19q-	10x	single cell, snATAC	Y
+#' SF11681	Glioblastoma	51	M	wildtype		chr7p+, chr10-	10x	single cell	N
+
+#' SF10679	Oligodendroglioma	43	M	IDH1R132H mutant		chr1p-, chr19q-	C1	single cell	Y
+#' SF11136	Astrocytoma	NA	NA	IDH1R132C mutant	ATRX stopgain	chr13-, chr17+,	10x	single cell	Y
+
+#' SF11612	Oligodendroglioma	NA	NA	IDH1R132H mutant		chr1p-, chr19q-	10x	single cell, snATAC	Y
+#' SF11949	Oligodendroglioma	40	M	IDH1R132H mutant		chr1p-, chr7, chr19q-	10x	single cell, snATAC	N
+#' SF11964	Glioblastoma	64	M	IDH1R132H mutant	ATRX deletion	chr1q-, chr6-, chr14-, chr18-, chr19q-	10x	single cell, snATAC	N
+#' SF12017	Astrocytoma	44	M	IDH1R132S mutant	TP53 mutation	chr1-, chr7q+, chr19q-	10x	single cell, snATAC	N
+
+#' SF10022	Glioblastoma	NA	NA	wildtype		chr7p+, chr8-, chr10-, chr12+	10x	single nucleus	N
+#' SF10127	Glioblastoma	NA	NA	wildtype		chr7+, chr10-	10x	single nucleus	N
+#' SF11979	Glioblastoma	76	F	wildtype		chr7p+, chr10-, chr19q-	10x	single nucleus	Y
+#' SF12090	Glioblastoma	NA	NA	wildtype		chr7+, chr10-	10x	single nucleus	N
+#' SF12264	Glioblastoma	NA	NA	wildtype		chr6-, chr7+, chr14p-	10x	single nucleus	N
+#' SF04400	Glioblastoma	NA	NA	wildtype		chr7+, chr10-	10x	single nucleus	N
+#' SF4297	Glioblastoma	NA	NA	wildtype		chr3p-, chr7+, chr11q+, chr12-, chr14p+	10x	single nucleus	N
+#' SF6996	Glioblastoma	NA	NA	wildtype		chr6q-, chr7+, chr10-, chr19+	10x	single nucleus	N
+#' SF9259	Glioblastoma	NA	NA	wildtype		chr7q+, chr10-, chr13-, chr14-	10x	single nucleus	N
+#' SF11215	Glioblastoma	NA	NA	wildtype		chr7+, chr10-, chr15-	10x	snATAC	N
+#' SF11331	Glioblastoma	55	M	wildtype		chr6q-, chr7+, chr10-	10x	snATAC	N
+
+
+
 # load libs ----
 
 
@@ -13,12 +54,9 @@ library(ensembldb)
 library(patchwork)
 
 
+# :: GSE138794 :: Diaz :: ----
 
-
-
-# GSE138794_Diaz ----
-
-## snRNA SF10022 [HQ] ----
+# snRNA SF10022 [HQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -336,7 +374,7 @@ FeaturePlot(object = object_1, features = "ITGA1") # endo + peri?
 
 
 
-## snRNA SF10127 [LowQ] ----
+# snRNA SF10127 [LowQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -432,7 +470,7 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters")
 
 
-## snRNA SF11979sn [LowQ] ----
+# snRNA SF11979sn [LowQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: IDHR132H WT GBM
@@ -519,7 +557,7 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters")
 
 
-## snRNA SF12090 [T,OD,MG - LowQ] ----
+# snRNA SF12090 [T,OD,MG - LowQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: IDHR132H WT GBM
@@ -607,7 +645,7 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 
 
 
-## snRNA SF12264 :: T,MG,TC+,OD [MHQ] ----
+# snRNA SF12264 :: T,MG,TC+,OD [MHQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -1045,7 +1083,7 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = 1.6, group.by = "seurat_clusters")
 
 
-## snRNA SF4297 :: T,OD,MG+,NE+,AC+ [MQ] ----
+# snRNA SF4297 :: T,OD,MG+,NE+,AC+ [MQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: GBM
@@ -1497,7 +1535,7 @@ FeaturePlot(object = object_1, features = C5)
 
 
 
-## snRNA SF9259[S+R] :: T-,OD++,TM ----
+# snRNA SF9259[S+R] :: T-,OD++,TM ----
 
 #@todo pooling of the 2?
 
@@ -1737,7 +1775,7 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 
-## scRNA SF11979 :: [LowQ] ----
+# scRNA SF11979 :: [LowQ] ----
 # best wat cellen maar heel weinig reads?
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4119531
 # tissue: glioma
@@ -1959,7 +1997,7 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 
-## scRNA SF11977 :: OD [LowQ] ----
+# scRNA SF11977 :: OD [LowQ] ----
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4119532
 # tissue: glioma
 # progression: Primary
@@ -2056,7 +2094,7 @@ tmp.t <- FindMarkers(object_1, ident.1 = c(0,1,2,3,5,7))
 
 
 
-## scRNA SF11956 :: [LowQ] ----
+# scRNA SF11956 :: [LowQ] ----
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4119533
 # tissue: glioma
 # progression: Primary
@@ -2146,7 +2184,7 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 
 
 
-## scRNA SF11644 :: T,TC,OD,TM,EN/PE [MQ] ----
+# scRNA SF11644 :: T,TC,OD,TM,EN/PE [MQ] ----
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4119534
 # tissue: glioma
 # progression: Primary
@@ -2402,7 +2440,7 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 
-## scRNA SF11681 ----
+# scRNA SF11681 ----
 # https://www-ncbi-nlm-nih-gov.ezproxy.u-pec.fr/geo/query/acc.cgi?acc=GSM4658373
 # progression: Recurrent
 # strain: GBM, IDH1R132H WT
@@ -2648,8 +2686,15 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 
+# scRNA SF11136 LGG :: ----
+# scRNA SF12017 LGG :: ----
+# scRNA SF11964 LGG :: ----
+# scRNA SF11949 ODG :: ----
+# scRNA SF11612 ODG :: ----
 
-## Combined ----
+
+
+# Combined ----
 
 
 
