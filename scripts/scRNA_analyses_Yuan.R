@@ -82,12 +82,13 @@ if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
 
 
 
-  GSE103224 <- b %>%
-  dplyr::left_join(c %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
-  dplyr::left_join(d %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
-  dplyr::left_join(f %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
-  dplyr::left_join(g %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS'))%>%
-  dplyr::left_join(h %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS'))
+  GSE103224 <- a %>%
+    dplyr::left_join(b %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
+    dplyr::left_join(c %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
+    dplyr::left_join(d %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
+    dplyr::left_join(f %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS')) %>%
+    dplyr::left_join(g %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS'))%>%
+    dplyr::left_join(h %>% dplyr::mutate(HGNC=NULL), by=c('ENS'='ENS'))
   
   saveRDS(GSE103224, file="tmp/GSE103224.scRNA.counts.Rds")
   
@@ -95,7 +96,7 @@ if(file.exists("tmp/GSE103224.scRNA.counts.Rds")) {
 }
 
 
-## convert to seurat/10x ----
+## Convert to seurat/10x ----
 
 
 GSE103224.genes <- GSE103224 %>%
@@ -143,7 +144,7 @@ for(sample in unique(gsub(".cell.+$","",GSE103224.cell.ids ))) {
 
   GSE103224.cell.ids.subset <- colnames(GSE103224.subset)
   
-  write10xCounts(path        = paste0("/home/youri/projects/gsam/data/scRNA/GSE103224_Yuan/", sample),
+  write10xCounts(path        = paste0("tmp/", sample),
                  x           = GSE103224.subset %>% as.matrix() %>% as("dgTMatrix"),
                  barcodes    = GSE103224.cell.ids.subset , 
                  gene.id     = GSE103224.genes$ENS,
