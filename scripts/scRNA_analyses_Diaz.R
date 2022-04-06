@@ -2758,6 +2758,29 @@ object_1 <- RunUMAP(object_1, dims = 1:d)
 object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
 
 
+DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters") +
+  geom_hline(yintercept = -11.4,col="red", lty=2)  +
+  guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
+  labs(subtitle=sid)
+
+
+
+levels(object_1$seurat_clusters) <- gsub("^(0|1|2|4|7)$",paste0("\\1. OD"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(9)$",paste0("\\1. TAM/MG"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(8)$",paste0("\\1. EN|PE"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(6)$",paste0("\\1. T (AC)"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(3|5)$",paste0("\\1. T (OPC)"),levels(object_1$seurat_clusters))
+
+
+levels(object_1$seurat_clusters)
+
+
+object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
+  "6. T (AC)",
+  "3. T (OPC)", "5. T (OPC)",
+  "0. OD",  "1. OD",  "2. OD",  "4. OD",  "7. OD",  "9. TAM/MG",
+  "8. EN|PE")
+  )
 
 
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters") +
