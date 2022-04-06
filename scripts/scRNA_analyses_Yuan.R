@@ -170,31 +170,6 @@ gc()
 #' idh1 status: R132H
 #' egfr status: not amplified
 
-## UMAP clustering ----
-
-object_1 <- RunUMAP(object_1, dims = 1:d)
-object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
-
-
-
-object_1 <- FindClusters(object_1, resolution = 1)
-# levels(object_1$seurat_clusters) <- gsub("^(0|2|7|8)$","\\1. T",levels(object_1$seurat_clusters))
-# levels(object_1$seurat_clusters) <- gsub("^(1|3|4|5|6)$","\\1. TAM/MG",levels(object_1$seurat_clusters))
-# levels(object_1$seurat_clusters) <- gsub("^(9)$","\\1. TC",levels(object_1$seurat_clusters))
-# levels(object_1$seurat_clusters)
-# object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
-#   "0. T","2. T","7. T","8. T",
-#   "1. TAM/MG","3. TAM/MG","4. TAM/MG","5. TAM/MG","6. TAM/MG", 
-#   "9. TC"
-# ))
-
-
-
-# DimPlot(object_1, reduction = "tsne", label = TRUE, pt.size = .8, group.by = "seurat_clusters")
-DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .8, group.by = "seurat_clusters")  +
-  guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
-  labs(subtitle=sid)
-
 
 
 rm(object_1)
@@ -264,7 +239,43 @@ head(Idents(object_1), 50)
 
 object_1 <- RunTSNE(object_1, dims = 1:d)
 
-# 
+## UMAP clustering ----
+
+
+object_1 <- RunUMAP(object_1, dims = 1:d)
+object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
+
+
+
+object_1 <- FindClusters(object_1, resolution = 1)
+# levels(object_1$seurat_clusters) <- gsub("^(0|2|7|8)$","\\1. T",levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(1|3|4|5|6)$","\\1. TAM/MG",levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(9)$","\\1. TC",levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters)
+# object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
+#   "0. T","2. T","7. T","8. T",
+#   "1. TAM/MG","3. TAM/MG","4. TAM/MG","5. TAM/MG","6. TAM/MG", 
+#   "9. TC"
+# ))
+
+
+
+# DimPlot(object_1, reduction = "tsne", label = TRUE, pt.size = .8, group.by = "seurat_clusters")
+DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .8, group.by = "seurat_clusters")  +
+  guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
+  labs(subtitle=sid)
+
+
+
+
+
+## FindMarkers ----
+
+
+tmp <- FindMarkers(object_1, ident.1 = c(1,7,8,9,10))
+
+
+
 
 ## 1. Tumor (+) ----
 
@@ -355,6 +366,15 @@ FeaturePlot(object = object_1, features = "TRBC2")
 # FeaturePlot(object = object_1, features = "GPR37L1")
 
 
+
+## 7. Cycling cells ----
+
+
+FeaturePlot(object = object_1, features = "FAM64A" )
+FeaturePlot(object = object_1, features = "AURKB" )
+FeaturePlot(object = object_1, features = "TOP2A" )
+FeaturePlot(object = object_1, features = "TPX2" )
+FeaturePlot(object = object_1, features = "CDC20" )
 
 
 
