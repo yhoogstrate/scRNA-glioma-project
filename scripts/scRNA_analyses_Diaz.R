@@ -558,7 +558,7 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters")
 
 
-# snRNA SF12090 GBM [T,OD,MG - LowQ] ----
+# snRNA SF12090 GBM :: T,OD,TAM [LowQ] ----
 # tissue: glioma
 # progression: Primary
 # genotype/variation: IDHR132H WT GBM
@@ -3038,13 +3038,184 @@ levels(object_1$seurat_clusters)
 
 
 object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
-)
+))
 
 
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters") +
   geom_hline(yintercept = -11.4,col="red", lty=2)  +
   guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
   labs(subtitle=sid)
+
+
+## checking for hybrid 'cells' ----
+
+object_1 <- FindClusters(object_1, resolution = 1, algorithm=1)
+object_1$class <- as.character(object_1$seurat_clusters)
+object_1$class <- ifelse(  object_1@reductions$umap@cell.embeddings[,1] >= -5.6 & 
+                           object_1@reductions$umap@cell.embeddings[,1] <= -3.25 & 
+                           object_1@reductions$umap@cell.embeddings[,2] >= -8 & 
+                           object_1@reductions$umap@cell.embeddings[,2] <= -5
+                           ,"T&OD?", object_1$class)
+
+
+summary(as.factor(object_1$class))
+
+
+DimPlot(object_1, reduction = "pca", label = TRUE, pt.size = .6, group.by = "class") +
+  guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
+  labs(subtitle=sid) +
+  geom_vline(xintercept = -5.6) +
+  geom_vline(xintercept = -3.25) +
+  geom_hline(yintercept = -8) +
+  geom_hline(yintercept = -5)
+
+
+## seems like PCA is good at revealing hybrid cells?
+
+
+## 1. Tumor (?) ----
+
+
+FeaturePlot(object = object_1, features = "GFAP") # Tumor/AC
+FeaturePlot(object = object_1, features = "OLIG1") # Tumor/OPC+NPC1
+
+
+FeaturePlot(object = object_1, features = "ETV1") # Tumor
+FeaturePlot(object = object_1, features = "CDK4") # Tumor
+FeaturePlot(object = object_1, features = "EGFR") # Tumor
+
+FeaturePlot(object = object_1, features = "S100B") # Tumor/AC
+FeaturePlot(object = object_1, features = "VIM") # Tumor/MES
+
+FeaturePlot(object = object_1, features = c("HSPA1A","HSPA1B","VEGFA")) # Apoptotic Tumor?
+FeaturePlot(object = object_1, features = c("RRM2","PCNA","KIAA0101")) # G1/S
+FeaturePlot(object = object_1, features = c("CCNB1","CDC20","CCNB2")) # G2/M
+FeaturePlot(object = object_1, features = c("TMPO")) # G2/M
+FeaturePlot(object = object_1, features = c("KIF2C","NUF2","ASPM","NEK2","CENPA","CKAP2L","SGOL1","CENPE","CCNA2","PBK","MKI67","CDCA3","NUSAP1","CCNB2","KIF23"))
+
+
+
+# succes met vinden van een marker
+FeaturePlot(object = object_1, features = c("EGFR","OLIG1","TMPO","VIM","STMN2",   "AURKB")) # Tumor
+
+
+## 2. Astrocyte (?) ----
+
+
+FeaturePlot(object = object_1, features = "STMN2") # Tumor
+FeaturePlot(object = object_1, features = "ETNPPL") # Tumor
+
+FeaturePlot(object = object_1, features = "GPR98")
+FeaturePlot(object = object_1, features = "AQP4")
+FeaturePlot(object = object_1, features = "BMPR1B")
+FeaturePlot(object = object_1, features = "ETNPPL")
+FeaturePlot(object = object_1, features = "GJB6")
+FeaturePlot(object = object_1, features = "GJA1")
+FeaturePlot(object = object_1, features = "FGFR3")
+FeaturePlot(object = object_1, features = "SLC25A18")
+FeaturePlot(object = object_1, features = "SLC1A2")
+FeaturePlot(object = object_1, features = "SDC4")
+
+
+
+## 3A. TAM/monocytes (?)----
+
+
+FeaturePlot(object = object_1, features = c("CD163"),order=T) # TAM
+FeaturePlot(object = object_1, features = c("P2RY12"),order=T) # specifiek MG, niet Mac?
+FeaturePlot(object = object_1, features = "CD14",order=T) # TAM
+FeaturePlot(object = object_1, features = c("ITGB2"),order=T)
+FeaturePlot(object = object_1, features = c("C1QC"),order=T)
+
+
+
+## 3B. Til/T-cell (?) ----
+
+
+FeaturePlot(object = object_1, features = "CD2")
+FeaturePlot(object = object_1, features = "CD3D")
+FeaturePlot(object = object_1, features = "CD4",order=T)
+FeaturePlot(object = object_1, features = "CD8A",order=T)
+FeaturePlot(object = object_1, features = "CD8B",order=T)
+FeaturePlot(object = object_1, features = "TRBC2")
+FeaturePlot(object = object_1, features = "TRAC")
+FeaturePlot(object = object_1, features = "ICOS")
+FeaturePlot(object = object_1, features = "GZMA")
+
+
+## 3C. B-cells (?) ----
+
+FeaturePlot(object = object_1, features = c("IGLC3"),order=T)
+FeaturePlot(object = object_1, features = c("CD19"),order=T)
+FeaturePlot(object = object_1, features = c("CD79B"),order=T)
+
+
+## 4. Neurons (?) ----
+
+
+FeaturePlot(object = object_1, features = "RBFOX3")
+FeaturePlot(object = object_1, features = "RBFOX1")
+FeaturePlot(object = object_1, features = "RBFOX2") # NPC2 ~ Neftel
+FeaturePlot(object = object_1, features = "DDN")
+FeaturePlot(object = object_1, features = "TNNT2")
+FeaturePlot(object = object_1, features = "TMEM130")
+FeaturePlot(object = object_1, features = "GABRG2")
+#FeaturePlot(object = object_1, features = "GABRA1")
+FeaturePlot(object = object_1, features = "GABRB2")
+
+
+DotPlot(object = object_1, features = c("RBFOX3",
+                                        "CNR1","SYT1","SYNPR","GABRA1","RELN,","VIP",
+                                        "CCT2","RUFY2","UBN2","ATP6V1H","HSPA4L","NASP","GNAO1","RAB6B","HLF","SLC25A36"
+),group.by = "seurat_clusters")
+
+## 5. Oligodendrocytes (?) ----
+
+FeaturePlot(object = object_1, features = "TMEM144")
+FeaturePlot(object = object_1, features = "TMEM125")
+FeaturePlot(object = object_1, features = "MOG")
+FeaturePlot(object = object_1, features = "PLP1")
+
+
+## 6A. Endothelial (?) ----
+
+FeaturePlot(object = object_1, features = "ABCB1")
+FeaturePlot(object = object_1, features = "CD34")
+FeaturePlot(object = object_1, features = "FLT4")
+FeaturePlot(object = object_1, features = "TIE1") # meh
+FeaturePlot(object = object_1, features = "ITGA1") # endo + peri?
+
+
+FeaturePlot(object = object_1, features = c("ABCB1", "CD34", "FLT4", "TIE1", "ITGA1",
+                                            "RGS5", "PDGFRB", "CD248"))
+
+
+DotPlot(object = object_1, features = c("ABCB1", "CD34", "FLT4", "TIE1", "ITGA1",
+                                        "RGS5", "PDGFRB", "CD248"), group.by = "seurat_clusters") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+
+FeaturePlot(object = object_1, features = c("SSTR2", "SST", "LHX1", "LHX6","NHLH1","NHLH2")) # other type of endothelial cells?
+DotPlot(object = object_1, features = c("SSTR2", "SST", "LHX1", "LHX6","NHLH1","NHLH2"), group.by = "seurat_clusters") # other type of endothelial cells?
+
+
+
+## 6B. Pericytes (?) ----
+
+FeaturePlot(object = object_1, features = "RGS5",order=T)
+FeaturePlot(object = object_1, features = "PDGFRB",order=T)
+FeaturePlot(object = object_1, features = "CD248",order=T)
+
+
+
+## 7. Cycling cells (?) ----
+
+
+FeaturePlot(object = object_1, features = "FAM64A" )
+FeaturePlot(object = object_1, features = "AURKB" )
+FeaturePlot(object = object_1, features = "TOP2A" )
+FeaturePlot(object = object_1, features = "TPX2" )
+FeaturePlot(object = object_1, features = "CDC20" )
+
 
 
 # scRNA SF11964 LGG :: ----
