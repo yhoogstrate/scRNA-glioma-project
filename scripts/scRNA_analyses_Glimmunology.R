@@ -12,11 +12,10 @@ library(AnnotationHub)
 library(ensembldb)
 
 
+# :: Glimmunology :: ----
 
+# A :: snRNA Sample_Y GBM ----
 
-# scRNA HGG levi Glimmunology ----
-
-## A :: Sample_Y ----
 
 rm(sid, object_1)
 gc()
@@ -73,7 +72,7 @@ plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 plot1
 plot2
 
-### scaling of data ----
+## scaling of data ----
 #Shifts the expression of each gene, so that the mean expression across cells is 0
 #Scales the expression of each gene, so that the variance across cells is 1
 #This step gives equal weight in downstream analyses, so that highly-expressed genes do not dominate
@@ -93,13 +92,13 @@ DimPlot(object_1, reduction = "pca")
 
 ElbowPlot(object_1, ndims = 45)
 
-### cluster the cells ----
+## cluster the cells ----
 
 object_1 <- FindNeighbors(object_1, dims = 1:40)
 object_1 <- FindClusters(object_1, resolution = 0.8, algorithm=1)
 head(Idents(object_1), 20)
 
-### UMAP clustering ----
+## UMAP clustering ----
 
 object_1 <- RunUMAP(object_1, dims = 1:40)
 object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
@@ -160,8 +159,8 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .8, group.by = "se
 
 
 
-ggsave(paste0("output/figures/scRNA/Glimmunology/",sid,"_UMAP.pdf"),width=10,height=8)
-ggsave(paste0("output/figures/scRNA/Glimmunology/",sid,"_UMAP.png"),width=12,height=10)
+#ggsave(paste0("output/figures/scRNA/Glimmunology/",sid,"_UMAP.pdf"),width=10,height=8)
+#ggsave(paste0("output/figures/scRNA/Glimmunology/",sid,"_UMAP.png"),width=12,height=10)
 
 
 od.markers <- FindMarkers(object_1, ident.1 = c(4,6,12,19,22))
@@ -183,7 +182,7 @@ View(tmp.15)
 
 
 
-#### 1. Tumor (+) ----
+## 1. Tumor (+) ----
 
 FeaturePlot(object = object_1, features = "ETV1") # Tumor
 FeaturePlot(object = object_1, features = "CDK4") # Tumor
@@ -260,7 +259,7 @@ FeaturePlot(object = object_1, features = "OLIG1")
 FeaturePlot(object = object_1, features = "NODAL")
 
 
-#### 2. Astrocyte (+) ----
+## 2. Astrocyte (+) ----
 
 FeaturePlot(object = object_1, features = "STMN2") # Tumor
 FeaturePlot(object = object_1, features = "ETNPPL") # Tumor
@@ -278,7 +277,7 @@ FeaturePlot(object = object_1, features = "SDC4")
 
 
 
-#### 3A. TAM/mg/monocytes (+)----
+## 3A. TAM/mg/monocytes (+)----
 
 FeaturePlot(object = object_1, features = c("CD163")) # TAM/mg
 FeaturePlot(object = object_1, features = c("P2RY12")) # specifiek MG, niet Mac?
@@ -288,7 +287,7 @@ FeaturePlot(object = object_1, features = c("C1QC"))
 
 
 
-#### 3B. Til/T-cell ----
+## 3B. Til/T-cell ----
 
 FeaturePlot(object = object_1, features = "CD2")
 FeaturePlot(object = object_1, features = "CD3D")
@@ -298,14 +297,14 @@ FeaturePlot(object = object_1, features = "ICOS")
 FeaturePlot(object = object_1, features = "GZMA")
 
 
-#### 3C. Hematopoietic stem cells? ----
+## 3C. Hematopoietic stem cells? ----
 
 
 FeaturePlot(object = object_1, features = "HBG1") # Tumor
 FeaturePlot(object = object_1, features = "HBG2") # Tumor
 
 
-#### 3D. ? Mono/Leukocyte ?? ----
+## 3D. ? Mono/Leukocyte ?? ----
 
 
 # These are cluster-13 DE genes, of which some at genecards seem related to leukocytes?
@@ -313,7 +312,7 @@ FeaturePlot(object = object_1, features = c("LAMP3","IRF4","NCCRP1","CRIP1","SYN
 
 
 
-#### 4. Neurons (+) ----
+## 4. Neurons (+) ----
 
 
 tmp <- list('C1'=neuron.genes[neuron.genes %in% NPC2 == F] ,
@@ -358,7 +357,7 @@ FeaturePlot(object = object_1, features = "GABRB2")
 FeaturePlot(object = object_1, features = "ANPEP") # DCN
 
 
-#### 5. Oligodendrocytes (+) ----
+## 5. Oligodendrocytes (+) ----
 
 
 # + "PEAR1", "HEYL" , "CFH"
@@ -401,7 +400,7 @@ FeaturePlot(object = object_1, features = "TTLL7") # OD?
 FeaturePlot(object = object_1, features = "OLIG2") # OD?
 
 
-ss#### 6A. Endothelial (+) ----
+## 6A. Endothelial (+) ----
 
 FeaturePlot(object = object_1, features = "ABCB1")
 FeaturePlot(object = object_1, features = "CD34")
@@ -411,7 +410,7 @@ FeaturePlot(object = object_1, features = "ITGA1") # endo + peri?
 
 
 
-#### 6B. Pericytes (+) ----
+## 6B. Pericytes (+) ----
 
 FeaturePlot(object = object_1, features = c("RGS5","PDGFRB","CD248","PEAR1", "HEYL" , "CFH"))
 
@@ -425,4 +424,113 @@ FeaturePlot(object = object_1, features = c("CFH"))
 
 
 
+## 7. Cycling cells (?) ----
+
+
+FeaturePlot(object = object_1, features = "TOP2A" )
+FeaturePlot(object = object_1, features = "AURKA" )
+FeaturePlot(object = object_1, features = "AURKB" )
+FeaturePlot(object = object_1, features = "BUB1" )
+FeaturePlot(object = object_1, features = "BUB1B" )
+FeaturePlot(object = object_1, features = "CDC20" )
+FeaturePlot(object = object_1, features = "CENPF" )
+FeaturePlot(object = object_1, features = "FAM64A" )
+FeaturePlot(object = object_1, features = "FOXM1" )
+FeaturePlot(object = object_1, features = "TACC3" )
+FeaturePlot(object = object_1, features = "TMPO" )
+FeaturePlot(object = object_1, features = "TPX2" )
+FeaturePlot(object = object_1, features = "TUBA1C" )
+
+
+# FeaturePlot(object = object_1, features = "RRM2" )
+FeaturePlot(object = object_1, features = "PCNA" )
+FeaturePlot(object = object_1, features = "KIAA0101" )
+# FeaturePlot(object = object_1, features = "HIST1H4C" )
+# FeaturePlot(object = object_1, features = "MLF1IP" )
+# FeaturePlot(object = object_1, features = "GMNN" )
+FeaturePlot(object = object_1, features = "RNASEH2A" )
+# FeaturePlot(object = object_1, features = "MELK" )
+# FeaturePlot(object = object_1, features = "CENPK" )
+# FeaturePlot(object = object_1, features = "TK1" )
+FeaturePlot(object = object_1, features = "TMEM106C" )
+# FeaturePlot(object = object_1, features = "CDCA5" )
+FeaturePlot(object = object_1, features = "CKS1B" )
+FeaturePlot(object = object_1, features = "CDC45" )
+FeaturePlot(object = object_1, features = "MCM3" )
+FeaturePlot(object = object_1, features = "CENPM" )
+FeaturePlot(object = object_1, features = "AURKB" )
+FeaturePlot(object = object_1, features = "PKMYT1" )
+FeaturePlot(object = object_1, features = "MCM4" )
+FeaturePlot(object = object_1, features = "ASF1B" )
+FeaturePlot(object = object_1, features = "GINS2" )
+FeaturePlot(object = object_1, features = "MCM2" )
+FeaturePlot(object = object_1, features = "FEN1" )
+FeaturePlot(object = object_1, features = "RRM1" )
+FeaturePlot(object = object_1, features = "DUT" )
+FeaturePlot(object = object_1, features = "RAD51AP1" )
+FeaturePlot(object = object_1, features = "MCM7" )
+FeaturePlot(object = object_1, features = "CCNE2" )
+FeaturePlot(object = object_1, features = "ZWINT" )
+
+
+FeaturePlot(object = object_1, features = "CCNB1" )
+FeaturePlot(object = object_1, features = "CDC20" )
+FeaturePlot(object = object_1, features = "CCNB2" )
+FeaturePlot(object = object_1, features = "PLK1" )
+FeaturePlot(object = object_1, features = "CCNA2" )
+FeaturePlot(object = object_1, features = "CKAP2" )
+FeaturePlot(object = object_1, features = "KNSTRN" )
+FeaturePlot(object = object_1, features = "RACGAP1" )
+FeaturePlot(object = object_1, features = "CDCA3" )
+FeaturePlot(object = object_1, features = "TROAP" )
+FeaturePlot(object = object_1, features = "KIF2C" )
+FeaturePlot(object = object_1, features = "KPNA2" )
+FeaturePlot(object = object_1, features = "KIF20A" )
+FeaturePlot(object = object_1, features = "ECT2" )
+FeaturePlot(object = object_1, features = "CDCA8" )
+FeaturePlot(object = object_1, features = "TTK" )
+FeaturePlot(object = object_1, features = "NCAPD2" )
+FeaturePlot(object = object_1, features = "ARL6IP1" )
+FeaturePlot(object = object_1, features = "KIF4A" )
+FeaturePlot(object = object_1, features = "CKAP2L" )
+FeaturePlot(object = object_1, features = "MZT1" )
+FeaturePlot(object = object_1, features = "KIFC1" )
+FeaturePlot(object = object_1, features = "SPAG5" )
+FeaturePlot(object = object_1, features = "ANP32E" )
+FeaturePlot(object = object_1, features = "KIF11" )
+FeaturePlot(object = object_1, features = "PSRC1" )
+FeaturePlot(object = object_1, features = "TUBB4B" )
+FeaturePlot(object = object_1, features = "SMC4" )
+FeaturePlot(object = object_1, features = "MXD3" )
+FeaturePlot(object = object_1, features = "CDC25B" )
+FeaturePlot(object = object_1, features = "OIP5" )
+FeaturePlot(object = object_1, features = "REEP4" )
+FeaturePlot(object = object_1, features = "GPSM2" )
+FeaturePlot(object = object_1, features = "HMGB3" )
+FeaturePlot(object = object_1, features = "ARHGAP11A" )
+FeaturePlot(object = object_1, features = "RANGAP1" )
+FeaturePlot(object = object_1, features = "H2AFZ" )
+
+## 8. longitudinal sig. chr6 ----
+
+
+sig <- c("H4C1", "H3C2", "H2AC4", "H3C3",            "HIST1H4A","HIST1H3B", "HIST1H2AB", "HIST1H3C",
+         "H1-6", "H3C7", "H2BC9", "H2BC11",          "HIST1H1T","HIST1H3F","HIST1H2BH","HIST1H2BH",
+         "H2AC11", "H2BC12", "H2AC12", "H2BC13",     "HIST1H2AG","HIST1H2BK","HIST1H2AH","HIST1H2BL",
+         "H2AC13", "H3C10", "H2AC14", "H2BC14",      "HIST1H2AI","HIST1H3H","HIST1H2AJ","H2BC14",
+         "H2AC15", "H2AC16", "H1-5", "H3C11",        "HIST1H2AK","HIST1H2AL","HIST1H1B","HIST1H3I",
+         "H3C12", "H2BC17",                          "HIST1H3J","HIST1H2BO"
+)
+sig <- unique(sig)
+
+sig %in% all.genes
+sig <- sig[ sig %in% all.genes]
+sig
+
+
+DotPlot(object_1, features=sig, group.by = "seurat_clusters")
+
+
+
+FeaturePlot(object_1, features=sig)
 

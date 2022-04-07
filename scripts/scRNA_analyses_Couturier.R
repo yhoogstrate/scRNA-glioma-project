@@ -1,5 +1,10 @@
 #!/usr/bin/env R
 
+
+#' All samles are IDH-wt GBM/GSC:
+#' https://www.nature.com/articles/s41467-020-17186-5/tables/1
+
+
 # load libs ----
 
 
@@ -39,7 +44,7 @@ rm(object_1)
 gc()
 
 sid <- "BT322.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -131,7 +136,7 @@ rm(object_1, sid)
 gc()
 
 sid <- "BT324-GSC.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -309,7 +314,7 @@ rm(object_1, sid)
 gc()
 
 sid <- "BT326-GSC.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -411,7 +416,7 @@ rm(object_1)
 gc()
 
 sid <- 'BT333-GSC.filtered_gene_matrices'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 
@@ -535,8 +540,8 @@ rm(object_1)
 gc()
 
 sid <- 'BT333.filtered_gene_matrices'
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
-#object_1 <- Read10X(data.dir = "data/scRNA/EGAS00001004422_Couturier/filtered/BT333-GSC.filtered_gene_matrices/")
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
+#object_1 <- Read10X(data.dir = "dataEGAS00001004422_Couturier/filtered/BT333-GSC.filtered_gene_matrices/")
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 
@@ -724,7 +729,7 @@ rm(object_1,sid)
 gc()
 
 sid <- "BT338_1of2.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 # RenameCells(object_1, new.names = paste0("Z_",colnames(object_1)))
@@ -732,7 +737,7 @@ object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 
 # head(x = colnames(x = object_1))
 
 sid <- "BT338_2of2.filtered_gene_matrices"
-object_1.tmp <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1.tmp <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1.tmp <- CreateSeuratObject(counts = object_1.tmp, min.cells = 3, min.features = 200, project="Couturier")
 
 object_1.m <- merge(object_1, y=object_1.tmp, add.cell.ids = c("1of2","2of2"), project="Couturier")
@@ -1110,7 +1115,7 @@ DotPlot(object = object_1, features =list('C6'=C6 , 'Peri'=c("RGS5", "PDGFRB", "
 
 
 sid <- "BT346.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -1225,7 +1230,7 @@ rm(sid, object_1)
 gc()
 
 sid <- "BT363-GSC.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -1447,11 +1452,11 @@ rm(sid, object_1)
 gc()
 
 sid <- "BT363_1of2.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 sid <- "BT363_2of2.filtered_gene_matrices"
-object_1.tmp <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1.tmp <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1.tmp <- CreateSeuratObject(counts = object_1.tmp, min.cells = 3, min.features = 200, project="Couturier")
 
 object_1.m <- merge(object_1, y=object_1.tmp, add.cell.ids = c("1of2","2of2"), project="Couturier")
@@ -1865,11 +1870,11 @@ rm(sid, object_1)
 gc()
 
 sid <- "BT364_1of2.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 sid <- "BT364_2of2.filtered_gene_matrices"
-object_1.tmp <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1.tmp <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1.tmp <- CreateSeuratObject(counts = object_1.tmp, min.cells = 3, min.features = 200, project="Couturier")
 
 object_1.m <- merge(object_1, y=object_1.tmp, add.cell.ids = c("1of2","2of2"), project="Couturier")
@@ -2247,7 +2252,7 @@ rm(object_1)
 gc()
 
 sid <- "BT368-GSC.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -2333,7 +2338,7 @@ gc()
 
 
 sid <- "BT368.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -2535,7 +2540,7 @@ rm(object_1)
 gc()
 
 sid <- "BT389.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -2760,7 +2765,7 @@ FeaturePlot(object = object_1, features = C5)
 ## BT390 :: T,MG++,TC,OD of 2e tum-clone? CNV nodig ----
 
 sid <- "BT390.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -2986,11 +2991,11 @@ rm(object_1)
 gc()
 
 sid <- "BT397_1of2.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 sid <- "BT397_2of2.filtered_gene_matrices"
-object_1.tmp <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1.tmp <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1.tmp <- CreateSeuratObject(counts = object_1.tmp, min.cells = 3, min.features = 200, project="Couturier")
 
 object_1.m <- merge(object_1, y=object_1.tmp, add.cell.ids = c("1of2","2of2"), project="Couturier")
@@ -3349,7 +3354,7 @@ rm(sid, object_1)
 gc()
 
 sid <- "BT400.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -3447,7 +3452,7 @@ rm(sid, object_1)
 gc()
 
 sid <- "BT402.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -3535,7 +3540,7 @@ gc()
 
 
 sid <- "BT407.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -3621,7 +3626,7 @@ rm(sid, object_1)
 gc()
 
 sid <- "BT409.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -3756,7 +3761,7 @@ rm(sid, object_1)
 gc()
 
 sid <- "HFA567_cd133.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -3868,7 +3873,7 @@ rm(sid, object_1)
 gc()
 
 sid <- "HFA567_total.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 
@@ -4058,7 +4063,7 @@ rm(sid, object_1)
 gc()
 
 sid <- "HFA570_cd133.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 
@@ -4180,7 +4185,7 @@ rm(object_1)
 gc()
 
 sid <- "HFA570_total.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 
@@ -4366,7 +4371,7 @@ FeaturePlot(object = object_1, features = "CD248")
 ## HFA571 CD133 :: No C6 ----
 
 sid <- "HFA571_cd133.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -4453,7 +4458,7 @@ gc()
 
 
 sid <- "HFA571_total.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
@@ -4543,7 +4548,7 @@ rm(sid, object_1)
 gc()
 
 sid <- "NSC1_cd133.filtered_gene_matrices"
-object_1 <- Read10X(data.dir = paste0("data/scRNA/EGAS00001004422_Couturier/filtered/",sid,"/"))
+object_1 <- Read10X(data.dir = paste0("dataEGAS00001004422_Couturier/filtered/",sid,"/"))
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Couturier")
 
 mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
