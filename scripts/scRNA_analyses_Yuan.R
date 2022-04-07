@@ -1,11 +1,13 @@
 #!/usr/bin/env R
 
 
-# Data matching to the following manuscript:
-# 
-# Yuan J, Levitin HM, Frattini V, Bush EC et al. Single-cell transcriptome analysis of lineage diversity in high-grade glioma. Genome Med 2018 Jul 24;10(1):57. PMID: 30041684
-# 
-# Data accessible at: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE103224
+#' Data matching to the following manuscript:
+#' 
+#' Yuan J, Levitin HM, Frattini V, Bush EC et al. Single-cell transcriptome analysis of lineage diversity in high-grade glioma. Genome Med 2018 Jul 24;10(1):57. PMID: 30041684
+#' 
+#' Data accessible at: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE103224
+#'
+#' Some samples were enriched for tumour cells?
 
 
 # load libs ----
@@ -281,7 +283,8 @@ tmp <- FindMarkers(object_1, ident.1 = c(1,7,8,9,10))
 
 p1 <- FeaturePlot(object = object_1, features = "GFAP") # Tumor/AC
 p2 <- FeaturePlot(object = object_1, features = "OLIG1") # Tumor/OPC+NPC1
-p1 + p2
+p3 <- FeaturePlot(object = object_1, features = "SOX2") # Tumor/AC
+p1 + p2 + p3
 
 
 FeaturePlot(object = object_1, features = "GFAP") # Tumor/AC
@@ -375,6 +378,30 @@ FeaturePlot(object = object_1, features = "AURKB" )
 FeaturePlot(object = object_1, features = "TOP2A" )
 FeaturePlot(object = object_1, features = "TPX2" )
 FeaturePlot(object = object_1, features = "CDC20" )
+
+
+## 8. longitudinal sig. chr6 ----
+
+
+sig <- c("H4C1", "H3C2", "H2AC4", "H3C3",            "HIST1H4A","HIST1H3B", "HIST1H2AB", "HIST1H3C",
+         "H1-6", "H3C7", "H2BC9", "H2BC11",          "HIST1H1T","HIST1H3F","HIST1H2BH","HIST1H2BH",
+         "H2AC11", "H2BC12", "H2AC12", "H2BC13",     "HIST1H2AG","HIST1H2BK","HIST1H2AH","HIST1H2BL",
+         "H2AC13", "H3C10", "H2AC14", "H2BC14",      "HIST1H2AI","HIST1H3H","HIST1H2AJ","H2BC14",
+         "H2AC15", "H2AC16", "H1-5", "H3C11",        "HIST1H2AK","HIST1H2AL","HIST1H1B","HIST1H3I",
+         "H3C12", "H2BC17",                          "HIST1H3J","HIST1H2BO"
+)
+sig <- unique(sig)
+
+sig %in% all.genes
+sig <- sig[ sig %in% all.genes]
+sig
+
+
+DotPlot(object_1, features=sig, group.by = "seurat_clusters")
+
+
+
+FeaturePlot(object_1, features=sig)
 
 
 
