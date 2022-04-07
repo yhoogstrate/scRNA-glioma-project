@@ -120,7 +120,7 @@ print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeatur
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -156,7 +156,7 @@ object_1 <- RunUMAP(object_1, dims = 1:d)
 object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
 
 levels(object_1$seurat_clusters) <- gsub("^(5)$",paste0("\\1. OD"),levels(object_1$seurat_clusters))
-levels(object_1$seurat_clusters) <- gsub("^(9|11)$",paste0("\\1. TAM/MG"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(9|11)$",paste0("\\1. TAM"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(15)$",paste0("\\1. EN&PE ?"),levels(object_1$seurat_clusters))# TBX3
 levels(object_1$seurat_clusters) <- gsub("^(3|6|7|4|1|2|0)$",paste0("\\1. T"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(12)$",paste0("\\1. T"),levels(object_1$seurat_clusters))
@@ -177,7 +177,7 @@ object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
   "8. AC?", 
   "14. N1?", "10. N2?",
   "5. OD",
-  "9. TAM/MG", "11. TAM/MG"
+  "9. TAM", "11. TAM"
 ))
 
 
@@ -225,7 +225,7 @@ object_1$youri_clusters <- as.character(object_1$seurat_clusters)
 #   geom_hline(yintercept=-0.75, linetype="dashed", color = "red")
 
 
-object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(9,11),"TAM/MG", object_1$youri_clusters)
+object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(9,11),"TAM", object_1$youri_clusters)
 object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(15),"Pericytes/Endothelial?", object_1$youri_clusters)
 object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(16),"Special neurons?", object_1$youri_clusters)
 object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(12,13),"Tumor [cycling?]", object_1$youri_clusters)
@@ -289,12 +289,12 @@ FeaturePlot(object = object_1, features = "SLC1A2")
 FeaturePlot(object = object_1, features = "SDC4")
 
 
-## 3A. TAM/mg/monocytes (+)----
+## 3A. TAM/monocytes (+)----
 
 
-FeaturePlot(object = object_1, features = c("CD163")) # TAM/mg
+FeaturePlot(object = object_1, features = c("CD163")) # TAM
 FeaturePlot(object = object_1, features = c("P2RY12")) # specifiek MG, niet Mac?
-FeaturePlot(object = object_1, features = "CD14") # TAM/mg
+FeaturePlot(object = object_1, features = "CD14") # TAM
 FeaturePlot(object = object_1, features = c("ITGB2"))
 FeaturePlot(object = object_1, features = c("C1QC"))
 
@@ -437,7 +437,7 @@ print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeatur
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -525,7 +525,7 @@ top10 <- head(VariableFeatures(object_1), 10)
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -612,7 +612,7 @@ top10 <- head(VariableFeatures(object_1), 10)
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -709,7 +709,7 @@ print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeatur
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -739,9 +739,9 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 
 # levels(object_1$seurat_clusters) <- gsub("^(2|9|12|8|11|4)$",paste0("\\1. T"),levels(object_1$seurat_clusters))
 # levels(object_1$seurat_clusters) <- gsub("^(5|0)$",paste0("\\1. OD"),levels(object_1$seurat_clusters))
-# levels(object_1$seurat_clusters) <- gsub("^(1|10)$",paste0("\\1. TAM/MG"),levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(1|10)$",paste0("\\1. TAM"),levels(object_1$seurat_clusters))
 # levels(object_1$seurat_clusters) <- gsub("^(13)$",paste0("\\1. TC"),levels(object_1$seurat_clusters))
-# levels(object_1$seurat_clusters) <- gsub("^(7)$",paste0("\\1. T + EN* + TAM/MG*"),levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(7)$",paste0("\\1. T + EN* + TAM*"),levels(object_1$seurat_clusters))
 # levels(object_1$seurat_clusters) <- gsub("^(3|6)$",paste0("\\1. T + TC*"),levels(object_1$seurat_clusters))
 
 object_1 <- FindClusters(object_1, resolution = 1, algorithm=1)
@@ -764,7 +764,7 @@ object_1$class <- ifelse(  object_1@reductions$umap@cell.embeddings[,1] >= 10 &
                              object_1@reductions$umap@cell.embeddings[,1] <= 17 & 
                              object_1@reductions$umap@cell.embeddings[,2] >= -7 & 
                              object_1@reductions$umap@cell.embeddings[,2] <= 2
-                           ,"TAM/MG", object_1$class)
+                           ,"TAM", object_1$class)
 object_1$seurat_clusters <- as.factor(paste0(object_1$seurat_clusters,". ",object_1$class))
 
 
@@ -772,7 +772,7 @@ object_1$seurat_clusters <- as.factor(paste0(object_1$seurat_clusters,". ",objec
 object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
   "2. T","3. T","4. T","6. T","7. T","8. T","9. T","11. T","12. T",
   "0. OD","5. OD",
-  "7. TAM/MG", "1. TAM/MG", "10. TAM/MG", "3. TAM/MG",
+  "7. TAM", "1. TAM", "10. TAM", "3. TAM",
   "1. TC","13. TC","2. TC","4. TC","7. TC",
   "3. BC", "7. BC"
 ))
@@ -845,7 +845,7 @@ object_1$youri_clusters <- ifelse(  object_1@reductions$umap@cell.embeddings[,1]
                                       object_1@reductions$umap@cell.embeddings[,1] <= 17 & 
                                       object_1@reductions$umap@cell.embeddings[,2] >= -7 & 
                                       object_1@reductions$umap@cell.embeddings[,2] <= 2
-                                    ,"TAM/MG", object_1$youri_clusters)
+                                    ,"TAM", object_1$youri_clusters)
 
 
 
@@ -907,12 +907,12 @@ FeaturePlot(object = object_1, features = "SDC4")
 
 
 
-## 3A. TAM/mg/monocytes (+)----
+## 3A. TAM/monocytes (+)----
 
 
-FeaturePlot(object = object_1, features = c("CD163"),order=T) # TAM/mg
+FeaturePlot(object = object_1, features = c("CD163"),order=T) # TAM
 FeaturePlot(object = object_1, features = c("P2RY12"),order=T) # specifiek MG, niet Mac?
-FeaturePlot(object = object_1, features = "CD14",order=T) # TAM/mg
+FeaturePlot(object = object_1, features = "CD14",order=T) # TAM
 FeaturePlot(object = object_1, features = c("ITGB2"),order=T)
 FeaturePlot(object = object_1, features = c("C1QC"),order=T)
 
@@ -1051,7 +1051,7 @@ top10 <- head(VariableFeatures(object_1), 10)
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -1148,7 +1148,7 @@ print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeatur
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -1184,7 +1184,7 @@ object_1$seurat_clusters <- ifelse(  object_1@reductions$umap@cell.embeddings[,1
                              object_1@reductions$umap@cell.embeddings[,2] <= -5.2
                            , paste0(object_1$seurat_clusters,". PE|EN?"), object_1$seurat_clusters)
 object_1$seurat_clusters <- as.factor(object_1$seurat_clusters)
-levels(object_1$seurat_clusters) <- gsub("^(1|4|11)$",paste0("\\1. TAM/MG"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(1|4|11)$",paste0("\\1. TAM"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(8)$",paste0("\\1. OD"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(9|12)$",paste0("\\1. NE"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(6|7)$",paste0("\\1. AC"),levels(object_1$seurat_clusters))
@@ -1200,7 +1200,7 @@ object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
   "8. OD",
   "6. PE|EN?",
   "13. ?",
-  "1. TAM/MG","4. TAM/MG","11. TAM/MG"
+  "1. TAM","4. TAM","11. TAM"
 ))
 object_1$classes <- gsub("^[0-9\\. ]+","",object_1$seurat_clusters)
 
@@ -1248,7 +1248,7 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .8, group.by = "yo
 
 
 
-object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(1,4,11),"TAM/MG", object_1$youri_clusters)
+object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(1,4,11),"TAM", object_1$youri_clusters)
 object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(9,12),"Neurons", object_1$youri_clusters)
 object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(8),"Oligodendrocytes", object_1$youri_clusters)
 object_1$youri_clusters <- ifelse(object_1$seurat_clusters %in% c(6,7,13) &
@@ -1316,12 +1316,12 @@ FeaturePlot(object = object_1, features = "SLC1A2")
 FeaturePlot(object = object_1, features = "SDC4")
 
 
-## 3A. TAM/mg/monocytes (+)----
+## 3A. TAM/monocytes (+)----
 
 
-FeaturePlot(object = object_1, features = c("CD163")) # TAM/mg
+FeaturePlot(object = object_1, features = c("CD163")) # TAM
 FeaturePlot(object = object_1, features = c("P2RY12")) # specifiek MG, niet Mac?
-FeaturePlot(object = object_1, features = "CD14") # TAM/mg
+FeaturePlot(object = object_1, features = "CD14") # TAM
 FeaturePlot(object = object_1, features = c("ITGB2"))
 FeaturePlot(object = object_1, features = c("C1QC"))
 
@@ -1485,7 +1485,7 @@ top10 <- head(VariableFeatures(object_1), 10)
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -1513,7 +1513,7 @@ head(Idents(object_1), 20)
 object_1 <- RunUMAP(object_1, dims = 1:d)
 object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
 
-levels(object_1$seurat_clusters) <- gsub("^(0)$",paste0("TAM/MG?"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(0)$",paste0("TAM?"),levels(object_1$seurat_clusters))
 
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters")
 
@@ -1593,7 +1593,7 @@ top10 <- head(VariableFeatures(object_1), 10)
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -1625,7 +1625,7 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 levels(object_1$seurat_clusters) <- gsub("^(0|1|7|3|4|5)$",paste0("Oligodendrocytes.\\1"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(6|11)$",paste0("Tumor.\\1"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(10)$",paste0("Tumor OPC/BCAN.\\1"),levels(object_1$seurat_clusters))
-levels(object_1$seurat_clusters) <- gsub("^(2|8|9)$",paste0("TAM/MG.\\1"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(2|8|9)$",paste0("TAM.\\1"),levels(object_1$seurat_clusters))
 
 
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters")
@@ -1683,12 +1683,12 @@ FeaturePlot(object = object_1, features = "SLC1A2")
 FeaturePlot(object = object_1, features = "SDC4")
 
 
-## 3A. TAM/mg/monocytes (+)----
+## 3A. TAM/monocytes (+)----
 
 
-FeaturePlot(object = object_1, features = c("CD163")) # TAM/mg
+FeaturePlot(object = object_1, features = c("CD163")) # TAM
 FeaturePlot(object = object_1, features = c("P2RY12")) # specifiek MG, niet Mac?
-FeaturePlot(object = object_1, features = "CD14") # TAM/mg
+FeaturePlot(object = object_1, features = "CD14") # TAM
 FeaturePlot(object = object_1, features = c("ITGB2"))
 FeaturePlot(object = object_1, features = c("C1QC"))
 
@@ -1820,7 +1820,7 @@ object_1$dataset <- as.character(gsub("^[^_]+_","",sid))
 # top10 <- head(VariableFeatures(object_1), 10)
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -1852,7 +1852,7 @@ object_1 <- RunUMAP(object_1, dims = 1:d)
 object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
 
 
-levels(object_1$seurat_clusters) <- gsub("^(1)$",paste0("TAM/MG.\\1"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(1)$",paste0("TAM.\\1"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(2|5|4|10|3|8|0|6)$",paste0("Tumor.\\1"),levels(object_1$seurat_clusters))
 
 
@@ -1903,12 +1903,12 @@ FeaturePlot(object = object_1, features = "SLC1A2")
 FeaturePlot(object = object_1, features = "SDC4")
 
 
-## 3A. TAM/mg/monocytes (+)----
+## 3A. TAM/monocytes (+)----
 
 
-FeaturePlot(object = object_1, features = c("CD163")) # TAM/mg
+FeaturePlot(object = object_1, features = c("CD163")) # TAM
 FeaturePlot(object = object_1, features = c("P2RY12")) # specifiek MG, niet Mac?
-FeaturePlot(object = object_1, features = "CD14") # TAM/mg
+FeaturePlot(object = object_1, features = "CD14") # TAM
 FeaturePlot(object = object_1, features = c("ITGB2"))
 FeaturePlot(object = object_1, features = c("C1QC"))
 
@@ -2042,7 +2042,7 @@ object_1$dataset <- as.character(gsub("^[^_]+_","",sid))
 # top10 <- head(VariableFeatures(object_1), 10)
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -2070,7 +2070,7 @@ head(Idents(object_1), 20)
 object_1 <- RunUMAP(object_1, dims = 1:d)
 object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
 
-# levels(object_1$seurat_clusters) <- gsub("^(1|4|11)$",paste0("TAM/MG.\\1"),levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(1|4|11)$",paste0("TAM.\\1"),levels(object_1$seurat_clusters))
 
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters")
 
@@ -2134,7 +2134,7 @@ object_1$dataset <- as.character(gsub("^[^_]+_","",sid))
 # top10 <- head(VariableFeatures(object_1), 10)
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -2163,7 +2163,7 @@ head(Idents(object_1), 20)
 object_1 <- RunUMAP(object_1, dims = 1:d)
 object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
 
-# levels(object_1$seurat_clusters) <- gsub("^(1|4|11)$",paste0("TAM/MG.\\1"),levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(1|4|11)$",paste0("TAM.\\1"),levels(object_1$seurat_clusters))
 
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters")
 
@@ -2232,7 +2232,7 @@ print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeatur
 
 
 top10 <- head(VariableFeatures(object_1), 10)
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE) #CombinePlots(plots = list(plot1, plot2))
 plot2
 
@@ -2262,7 +2262,7 @@ object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[
 
 levels(object_1$seurat_clusters) <- gsub("^(18)$",paste0("\\1. TC"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(16)$",paste0("\\1. OD"),levels(object_1$seurat_clusters))
-levels(object_1$seurat_clusters) <- gsub("^(1|8|12|15|12|17)$",paste0("\\1. TAM/MG"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(1|8|12|15|12|17)$",paste0("\\1. TAM"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(0|2|3|4|5|6|7|9|10|11|13)$",paste0("\\1. T"),levels(object_1$seurat_clusters))
 
 object_1$seurat_clusters <- ifelse(grepl("^(14)$",as.character(object_1$seurat_clusters)) &  object_1@reductions$umap@cell.embeddings[,2] >= -11.4 ,"14. PE",as.character(object_1$seurat_clusters))
@@ -2272,7 +2272,7 @@ object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
   "0. T","2. T","3. T","4. T","5. T","6. T","7. T","9. T","10. T","11. T","13. T",
   "16. OD",
   
-  "1. TAM/MG","8. TAM/MG","12. TAM/MG","15. TAM/MG","17. TAM/MG",
+  "1. TAM","8. TAM","12. TAM","15. TAM","17. TAM",
   "18. TC",
   
   "14. EN","14. PE"
@@ -2339,12 +2339,12 @@ FeaturePlot(object = object_1, features = "SLC1A2")
 FeaturePlot(object = object_1, features = "SDC4")
 
 
-## 3A. TAM/mg/monocytes (?) ----
+## 3A. TAM/monocytes (?) ----
 
 
-FeaturePlot(object = object_1, features = c("CD163")) # TAM/mg
+FeaturePlot(object = object_1, features = c("CD163")) # TAM
 FeaturePlot(object = object_1, features = c("P2RY12")) # specifiek MG, niet Mac?
-FeaturePlot(object = object_1, features = "CD14") # TAM/mg
+FeaturePlot(object = object_1, features = "CD14") # TAM
 FeaturePlot(object = object_1, features = c("ITGB2"))
 FeaturePlot(object = object_1, features = c("C1QC"))
 
@@ -2482,7 +2482,7 @@ print(paste0("Median(nCount_RNA) in ",sid, " = ",round(median(object_1$nCount_RN
 print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeature_RNA))))
 
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -2511,7 +2511,7 @@ object_1 <- RunUMAP(object_1, dims = 1:d)
 object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
 
 levels(object_1$seurat_clusters) <- gsub("^(7)$",paste0("\\1. OD"),levels(object_1$seurat_clusters))
-levels(object_1$seurat_clusters) <- gsub("^(1|4|5|11)$",paste0("\\1. TAM/MG"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(1|4|5|11)$",paste0("\\1. TAM"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(0|2|3|6|7|8|10|12)$",paste0("\\1. T"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(9)$",paste0("\\1. TC (+2PE?)"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(13)$",paste0("\\1. PE?"),levels(object_1$seurat_clusters))
@@ -2520,7 +2520,7 @@ levels(object_1$seurat_clusters) <- gsub("^(13)$",paste0("\\1. PE?"),levels(obje
 object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
   "0. T","2. T","3. T","6. T","8. T","10. T","12. T",
   "7. OD",
-  "1. TAM/MG", "4. TAM/MG", "5. TAM/MG", "11. TAM/MG",
+  "1. TAM", "4. TAM", "5. TAM", "11. TAM",
   "9. TC (+2PE?)"))
 
 
@@ -2582,12 +2582,12 @@ FeaturePlot(object = object_1, features = "SLC1A2")
 FeaturePlot(object = object_1, features = "SDC4")
 
 
-## 3A. TAM/mg/monocytes (?) ----
+## 3A. TAM/monocytes (?) ----
 
 
-FeaturePlot(object = object_1, features = c("CD163")) # TAM/mg
+FeaturePlot(object = object_1, features = c("CD163")) # TAM
 FeaturePlot(object = object_1, features = c("P2RY12")) # specifiek MG, niet Mac?
-FeaturePlot(object = object_1, features = "CD14") # TAM/mg
+FeaturePlot(object = object_1, features = "CD14") # TAM
 FeaturePlot(object = object_1, features = c("ITGB2"))
 FeaturePlot(object = object_1, features = c("C1QC"))
 
@@ -2671,7 +2671,7 @@ FeaturePlot(object = object_1, features = "CD248")
 
 
 
-# scRNA SF11136 LGG :: ----
+# scRNA SF11136 LGG :: T,AC?,TAM,EN|PE [MQ]----
 
 rm(sid, object_1)
 gc()
@@ -2728,7 +2728,7 @@ print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeatur
 
 # plot variable features with and without labels
 
-plot1 <- VariableFeaturePlot(object_1)
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 #CombinePlots(plots = list(plot1, plot2))     
 plot1
@@ -2752,6 +2752,8 @@ object_1 <- FindNeighbors(object_1, dims = 1:d)
 object_1 <- FindClusters(object_1, resolution = 1, algorithm=1)
 head(Idents(object_1), 20)
 
+
+
 ## UMAP clustering ----
 
 object_1 <- RunUMAP(object_1, dims = 1:d)
@@ -2766,7 +2768,7 @@ DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "se
 
 
 levels(object_1$seurat_clusters) <- gsub("^(0|1|2|4|7)$",paste0("\\1. OD"),levels(object_1$seurat_clusters))
-levels(object_1$seurat_clusters) <- gsub("^(9)$",paste0("\\1. TAM/MG"),levels(object_1$seurat_clusters))
+levels(object_1$seurat_clusters) <- gsub("^(9)$",paste0("\\1. TAM"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(8)$",paste0("\\1. EN|PE"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(6)$",paste0("\\1. T (AC)"),levels(object_1$seurat_clusters))
 levels(object_1$seurat_clusters) <- gsub("^(3|5)$",paste0("\\1. T (OPC)"),levels(object_1$seurat_clusters))
@@ -2778,7 +2780,7 @@ levels(object_1$seurat_clusters)
 object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
   "6. T (AC)",
   "3. T (OPC)", "5. T (OPC)",
-  "0. OD",  "1. OD",  "2. OD",  "4. OD",  "7. OD",  "9. TAM/MG",
+  "0. OD",  "1. OD",  "2. OD",  "4. OD",  "7. OD",  "9. TAM",
   "8. EN|PE")
   )
 
@@ -2833,12 +2835,12 @@ FeaturePlot(object = object_1, features = "SDC4")
 
 
 
-## 3A. TAM/mg/monocytes (+)----
+## 3A. TAM/monocytes (+)----
 
 
-FeaturePlot(object = object_1, features = c("CD163"),order=T) # TAM/mg
+FeaturePlot(object = object_1, features = c("CD163"),order=T) # TAM
 FeaturePlot(object = object_1, features = c("P2RY12"),order=T) # specifiek MG, niet Mac?
-FeaturePlot(object = object_1, features = "CD14",order=T) # TAM/mg
+FeaturePlot(object = object_1, features = "CD14",order=T) # TAM
 FeaturePlot(object = object_1, features = c("ITGB2"),order=T)
 FeaturePlot(object = object_1, features = c("C1QC"),order=T)
 
@@ -2942,6 +2944,107 @@ sid <- 'scRNA_GSM4119536_SF12017_LGG'
 object_1 <- Read10X(data.dir = paste0("data/GSE138794_Diaz/",sid,"/"), gene.column = 1)
 object_1 <- CreateSeuratObject(counts = object_1, min.cells = 3, min.features = 200, project="Diaz")
 
+
+mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
+percent.mito_object1 <- Matrix::colSums(x = GetAssayData(object = object_1, slot="counts")[mito.features_object1,]) / Matrix::colSums(x = GetAssayData(object = object_1, slot = "counts"))
+object_1[["percent.mito"]] <- percent.mito_object1
+VlnPlot(object = object_1, features = c("nFeature_RNA", "nCount_RNA", "percent.mito"), ncol = 3, pt.size = 0.01, group.by = "orig.ident") 
+
+
+ggplot(object_1@meta.data, aes(y=`nFeature_RNA`, x=orig.ident)) +
+  geom_jitter(cex=0.01) +
+  geom_hline(yintercept = 1200,col="red") +
+  geom_hline(yintercept = 7500,col="red")
+
+
+ggplot(object_1@meta.data, aes(y=`nCount_RNA`, x=orig.ident)) +
+  geom_jitter(cex=0.01)  +
+  geom_hline(yintercept = 500,col="red") +
+  geom_hline(yintercept = 50000,col="red") # + scale_y_log10()
+
+
+
+object_1 <- subset(x = object_1, subset =
+                     nFeature_RNA > 1200 &
+                     nFeature_RNA < 8000 &
+                     nCount_RNA > 500 &
+                     nCount_RNA < 50000 &
+                     percent.mito < 0.2)
+
+
+object_1 <- NormalizeData(object = object_1, normalization.method = "LogNormalize", scale.factor = 1e4)
+object_1 <- FindVariableFeatures(object = object_1, selection.method = "vst", nfeatures = 2000)
+object_1[["state"]] <- "P1"
+object_1$dataset <- as.character(gsub("^[^_]+_","",sid))
+
+
+top10 <- head(VariableFeatures(object_1), 10)
+
+
+print(paste0("Median(nCount_RNA) in ",sid, " = ",round(median(object_1$nCount_RNA))))
+print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeature_RNA))))
+
+
+
+
+
+# plot variable features with and without labels
+
+plot1 <- VariableFeaturePlot(object_1) + theme(legend.position = 'bottom')
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot2
+rm(plot1)
+
+all.genes <- rownames(object_1)
+object_1 <- ScaleData(object_1, features = all.genes)
+
+object_1 <- RunPCA(object_1, features = VariableFeatures(object = object_1))
+print(object_1[["pca"]], dims = 1:5, nfeatures = 5)
+VizDimLoadings(object_1, dims = 1:2, reduction = "pca")
+DimPlot(object_1, reduction = "pca")
+
+
+## estimation of the number of principle components in your dataset
+
+ElbowPlot(object_1, ndims = 45)
+
+d <- 25
+object_1 <- FindNeighbors(object_1, dims = 1:d)
+object_1 <- FindClusters(object_1, resolution = 1, algorithm=1)
+head(Idents(object_1), 20)
+
+
+## UMAP clustering ----
+
+object_1 <- RunUMAP(object_1, dims = 1:d)
+object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
+
+
+DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters") +
+  geom_hline(yintercept = -11.4,col="red", lty=2)  +
+  guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
+  labs(subtitle=sid)
+
+
+
+# levels(object_1$seurat_clusters) <- gsub("^(0|1|2|4|7)$",paste0("\\1. OD"),levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(9)$",paste0("\\1. TAM"),levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(8)$",paste0("\\1. EN|PE"),levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(6)$",paste0("\\1. T (AC)"),levels(object_1$seurat_clusters))
+# levels(object_1$seurat_clusters) <- gsub("^(3|5)$",paste0("\\1. T (OPC)"),levels(object_1$seurat_clusters))
+
+
+levels(object_1$seurat_clusters)
+
+
+object_1$seurat_clusters <- factor(object_1$seurat_clusters, levels=c(
+)
+
+
+DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .6, group.by = "seurat_clusters") +
+  geom_hline(yintercept = -11.4,col="red", lty=2)  +
+  guides(col=guide_legend(ncol=1, override.aes = list(size = 3))) +
+  labs(subtitle=sid)
 
 
 # scRNA SF11964 LGG :: ----
