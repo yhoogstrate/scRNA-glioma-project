@@ -550,7 +550,7 @@ DotPlot(object = object_1, features = set, group.by = "seurat_clusters") +
 
 
 
-# B :: snRNA LGG 101P ----
+# snRNA LGG 101P ----
 
 rm(sid, object_1)
 gc()
@@ -642,7 +642,7 @@ head(Idents(object_1), 20)
 
 ## UMAP clustering ----
 
-object_1 <- RunUMAP(object_1, dims = 1:40)
+object_1 <- RunUMAP(object_1, dims = 1:d)
 object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
 DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .8, group.by = "seurat_clusters",label.size=6)
 
@@ -682,9 +682,11 @@ FeaturePlot(object = object_1, features = c("KAZN","DNM3","TNR","GALNT13","RAPGE
 
 
 
-
 tmp.17a <- FindMarkers(object_1, ident.1 = '17') # 17, specifically
 tmp.17b <- FindMarkers(object_1, ident.1 = '17', ident.2 = '18') # 17, compared to EN/PE
+
+
+FeaturePlot(object = object_1, features = c("GABRB1","RBFOX3"))
 
 
 # what is cluster 18? seems partially tumor but close to PE/EN? x-check in pca?
@@ -888,6 +890,142 @@ sig <- c("H4C1", "H3C2", "H2AC4", "H3C3",            "HIST1H4A","HIST1H3B", "HIS
 sig <- unique(sig)
 FeaturePlot(object = object_1, features = sig )
 
+
+
+
+
+# snRNA LGG 103R ----
+
+rm(sid, object_1)
+gc()
+
+#Glimmunology/10x_sequencing_data/primary-recurrent_gliomas/103/Levi_103R_outs/filtered_feature_bc_matrix
+
+sid <- 'van_Hijfte_LGG_103R'
+object_1 <- Read10X(data.dir = "data/Glimmunology_LGG_103R/filtered_feature_bc_matrix")
+object_1 <- CreateSeuratObject(counts = object_1,
+                               min.cells = 3,
+                               min.features = 200,
+                               project = "glioma_glim")
+mito.features_object1 <- grep(pattern = "^MT-", x=rownames(x=object_1), value=T)
+percent.mito_object1 <- Matrix::colSums(x = GetAssayData(object = object_1, slot="counts")[mito.features_object1,]) / Matrix::colSums(x = GetAssayData(object = object_1, slot = "counts"))
+object_1[["percent.mito"]] <- percent.mito_object1
+VlnPlot(object = object_1, features = c("nFeature_RNA", "nCount_RNA", "percent.mito"), ncol = 3, pt.size = 0.01, group.by = "orig.ident") 
+
+
+ggplot(object_1@meta.data, aes(y=`nFeature_RNA`, x=orig.ident)) +
+  geom_jitter(cex=0.01) +
+  geom_hline(yintercept = 500,col="red") +
+  geom_hline(yintercept = 2750,col="red")
+
+
+ggplot(object_1@meta.data, aes(y=`nCount_RNA`, x=orig.ident)) +
+  geom_jitter(cex=0.01)  +
+  geom_hline(yintercept = 500,col="red") +
+  geom_hline(yintercept = 7500,col="red")
+#scale_y_log10()
+
+
+
+object_1 <- subset(x = object_1, subset = 
+                     nFeature_RNA > 500 &
+                     nFeature_RNA < 2750 & 
+                     nCount_RNA > 500 &
+                     nCount_RNA < 7500 &
+                     percent.mito < 0.025)
+
+object_1 <- NormalizeData(object = object_1, normalization.method = "LogNormalize", scale.factor = 1e4)
+object_1 <- FindVariableFeatures(object = object_1, selection.method = "vst", nfeatures = 2000)
+#object_1[["state"]] <- "P1" 
+
+
+top10 <- head(VariableFeatures(object_1), 10)
+
+
+print(paste0("Median(nCount_RNA) in ",sid, " = ",round(median(object_1$nCount_RNA))))
+print(paste0("Median(nFeature_RNA) in ",sid, " = ",round(median(object_1$nFeature_RNA))))
+
+
+
+# plot variable features with and without labels
+
+plot1 <- VariableFeaturePlot(object_1)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+#CombinePlots(plots = list(plot1, plot2))     
+plot2
+
+
+## scaling of data ----
+#Shifts the expression of each gene, so that the mean expression across cells is 0
+#Scales the expression of each gene, so that the variance across cells is 1
+#This step gives equal weight in downstream analyses, so that highly-expressed genes do not dominate
+#The results of this are stored in pbmc[["RNA"]]@scale.data
+
+
+all.genes <- rownames(object_1)
+object_1 <- ScaleData(object_1, features = all.genes)
+
+
+
+## cluster the cells ----
+
+all.genes <- rownames(object_1)
+object_1 <- ScaleData(object_1, features = all.genes)
+
+
+object_1 <- RunPCA(object_1, features = VariableFeatures(object = object_1))
+print(object_1[["pca"]], dims = 1:5, nfeatures = 5)
+VizDimLoadings(object_1, dims = 1:2, reduction = "pca")
+DimPlot(object_1, reduction = "pca",label = TRUE, pt.size = .8, group.by = "seurat_clusters")
+
+
+ElbowPlot(object_1, ndims = 45)## estimation of the number of principle components in your dataset
+
+d <- 29 # ? 27 #
+object_1 <- FindNeighbors(object_1, dims = 1:d)
+object_1 <- FindClusters(object_1, resolution = 1, algorithm=1)
+head(Idents(object_1), 20)
+
+
+## UMAP clustering ----
+
+object_1 <- RunUMAP(object_1, dims = 1:d)
+object_1@meta.data$pt = sapply(strsplit(rownames(object_1@meta.data), "[.]"), "[", 1)
+DimPlot(object_1, reduction = "umap", label = TRUE, pt.size = .8, group.by = "seurat_clusters",label.size=6)
+
+
+FeaturePlot(object = object_1, reduction="pca", features = "nFeature_RNA" )
+
+
+## 7. Cycling cells (?) ----
+
+
+FeaturePlot(object = object_1, features = "TOP2A" , order=T)
+FeaturePlot(object = object_1, features = "AURKA" )
+FeaturePlot(object = object_1, features = "AURKB" )
+FeaturePlot(object = object_1, features = "BUB1" )
+FeaturePlot(object = object_1, features = "BUB1B" )
+FeaturePlot(object = object_1, features = "CDC20" )
+FeaturePlot(object = object_1, features = "CENPF" )
+FeaturePlot(object = object_1, features = "FAM64A" )
+FeaturePlot(object = object_1, features = "FOXM1" )
+FeaturePlot(object = object_1, features = "TACC3" )
+FeaturePlot(object = object_1, features = "TMPO" )
+FeaturePlot(object = object_1, features = "TPX2" )
+FeaturePlot(object = object_1, features = "TUBA1C" )
+
+
+
+sig <- c("H4C1", "H3C2", "H2AC4", "H3C3",            "HIST1H4A","HIST1H3B", "HIST1H2AB", "HIST1H3C",
+         "H1-6", "H3C7", "H2BC9", "H2BC11",          "HIST1H1T","HIST1H3F","HIST1H2BH","HIST1H2BH",
+         "H2AC11", "H2BC12", "H2AC12", "H2BC13",     "HIST1H2AG","HIST1H2BK","HIST1H2AH","HIST1H2BL",
+         "H2AC13", "H3C10", "H2AC14", "H2BC14",      "HIST1H2AI","HIST1H3H","HIST1H2AJ","H2BC14",
+         "H2AC15", "H2AC16", "H1-5", "H3C11",        "HIST1H2AK","HIST1H2AL","HIST1H1B","HIST1H3I",
+         "H3C12", "H2BC17",                          "HIST1H3J","HIST1H2BO")
+sig <- unique(sig)
+FeaturePlot(object = object_1, features = sig , order = T)
+
+DotPlot(object = object_1, features = sig)
 
 
 
