@@ -5,15 +5,18 @@ Created on Tue Nov 29 14:13:39 2022
 @author: Youri LRM
 """
 
+#%%
 
 import os
 print(os.getcwd())
 
+#%%
 
 import numpy as np
 import pandas as pd
 import scanpy as sc
 
+#%%
 
 # tuto
 # https://scanpy-tutorials.readthedocs.io/en/latest/pbmc3k.html
@@ -34,6 +37,7 @@ adata = sc.read_10x_mtx(
     var_names='gene_symbols',                # use gene symbols for the variable names (variables-axis index)
     cache=True)   
 
+#%%
 
 adata.var_names_make_unique()
 
