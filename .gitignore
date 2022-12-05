@@ -5,3 +5,4 @@
 data/Glimmunology_LGG_103R
 .venv
 *.h5ad
+*.html

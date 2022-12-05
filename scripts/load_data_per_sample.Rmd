@@ -1,0 +1,22 @@
+#!/usr/bin/env R
+
+# add sample desriptors ----
+```{r}
+data_per_sample <- data.frame()
+```
+
+## van Hijfte - GBM sample Y ----
+
+
+
+```{r}
+data_per_sample <- data_per_sample |> 
+  rbind(data.frame(
+    "sid" = "van_Hijfte_GBM_Y",
+    "sample_name" = "van Hijfte - GBM Sample Y",
+    "doi" = "https://dx.doi.org/zenodo.6546712",
+    "path" = 'data/van_Hijfte_GBM_Y/'
+  ))
+```
+
+# obtain generic stats ----
