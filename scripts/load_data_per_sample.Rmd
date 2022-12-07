@@ -1,22 +1,119 @@
-#!/usr/bin/env R
+---
+title: "Glioma scRNA project - Loading data per sample"
+author: "Youri Hoogstrate"
+date: "`r BiocStyle::doc_date()`"
+---
 
-# add sample desriptors ----
+# setup
+
 ```{r}
+library(ggplot2)
+library(dplyr)
+#library(Seurat,quietly = T)
+#library(SoupX,quietly = T)
+
+print(getwd())
+
+source('scripts/theme_youri.R')
+```
+
+# add sample desrciptors
+```{r init df}
 data_per_sample <- data.frame()
 ```
 
-## van Hijfte - GBM sample Y ----
+## van Hijfte - GBM sample Y
 
-
-
-```{r}
+```{r attach dataset}
 data_per_sample <- data_per_sample |> 
   rbind(data.frame(
     "sid" = "van_Hijfte_GBM_Y",
     "sample_name" = "van Hijfte - GBM Sample Y",
     "doi" = "https://dx.doi.org/zenodo.6546712",
-    "path" = 'data/van_Hijfte_GBM_Y/'
+    "path_seurat" = 'data/van_Hijfte_GBM_Y/Glioma_Y_and_O/Levi2_Glioma_Y/outs/raw_feature_bc_matrix'
   ))
 ```
 
-# obtain generic stats ----
+# Add some columns based on existing
+
+```{r}
+data_per_sample <- data_per_sample |> 
+  dplyr::mutate(path_soupx = gsub("^(.+)/[^.]+$","\\1", path_seurat)) |> 
+  dplyr::mutate(n.barcodes = NA) |> 
+  dplyr::mutate(n.genes = NA) |> 
+  dplyr::mutate(n.reads = NA)
+```
+
+# Fig 1: Sample overview
+
+```{r dataset overview}
+data_per_sample
+```
+
+# obtain generic stats
+## SoupX analysis
+
+https://github.com/constantAmateur/SoupX
+
+```{r}
+sample <- data_per_sample |> 
+  dplyr::slice(1)
+
+sc <- SoupX::load10X(sample$path_soupx, verbose=T)
+
+data_per_sample <- data_per_sample |> 
+  dplyr::mutate(n.barcodes = ifelse(.data$sid == sample$sid, ncol(sc$toc), n.barcodes)) |> 
+  dplyr::mutate(n.genes = ifelse(.data$sid == sample$sid, nrow(sc$toc), n.genes))
+```
+
+
+```{r}
+plt <- data.frame(counts.per.barcode = Matrix::colSums(sc$toc)) |> 
+  dplyr::mutate(rank = order(order(dplyr::desc(counts.per.barcode))))
+
+ggplot(plt, aes(x=rank, y=counts.per.barcode)) +
+  geom_line() +
+  scale_y_log10() +
+  labs(x="10X barcode", y="read count per barcode", subtitle=paste0("QC plot: ", .sample$sample_name)) +
+  theme_youri
+
+rm(plt)
+```
+
+
+```{r}
+sc <- SoupX::autoEstCont(sc)
+out <- SoupX::adjustCounts(sc)
+```
+
+```{r, contribution genes to 'soup'}
+plt <- sc |>
+  purrr::pluck('soupProfile') |> 
+  dplyr::arrange(desc(est)) |> 
+  tibble::rownames_to_column('gene_symbol') 
+
+ggplot(plt |> head(n=20), aes(x=reorder(gene_symbol, desc(counts)), y=counts)) +
+  geom_point() +
+  scale_y_log10() +
+  theme_youri_barplot
+```
+
+
+
+
+```{r, eval=FALSE}
+plotMarkerDistribution(sc)
+plotChangeMap(sc, out, "COL1A1")
+plotChangeMap(sc, out, "COL1A2")
+plotChangeMap(sc, out, "CD248")
+plotChangeMap(sc, out, "PDGFRB")
+plotChangeMap(sc, out, "CD163")
+plotChangeMap(sc, out, "RBFOX3")
+#SoupX::plotMarkerMap()
+SoupX::plotMarkerMa
+```
+
+
+
+
+
