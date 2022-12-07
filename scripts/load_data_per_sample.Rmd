@@ -74,7 +74,7 @@ plt <- data.frame(counts.per.barcode = Matrix::colSums(sc$toc)) |>
 ggplot(plt, aes(x=rank, y=counts.per.barcode)) +
   geom_line() +
   scale_y_log10() +
-  labs(x="10X barcode", y="read count per barcode", subtitle=paste0("QC plot: ", .sample$sample_name)) +
+  labs(x="10X barcode", y="read count per barcode", subtitle=paste0("QC plot: ", sample$sample_name)) +
   theme_youri
 
 rm(plt)
