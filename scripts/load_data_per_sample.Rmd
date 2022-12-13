@@ -4,15 +4,19 @@ author: "Youri Hoogstrate"
 date: "`r BiocStyle::doc_date()`"
 ---
 
+```{r, eval=FALSE}
+remove.packages('SoupX')
+xfun::install_github("https://github.com/yhoogstrate/SoupX/tree/passthrough_arguments")
+```
+
+
 # setup
 
 ```{r}
-library(ggplot2)
-library(dplyr)
-#library(Seurat,quietly = T)
-#library(SoupX,quietly = T)
+library(ggplot2, quietly = T)
+library(dplyr, quietly = T)
 
-print(getwd())
+print(getwd()) # 
 
 source('scripts/theme_youri.R')
 ```
@@ -41,8 +45,18 @@ data_per_sample <- data_per_sample |>
   dplyr::mutate(path_soupx = gsub("^(.+)/[^.]+$","\\1", path_seurat)) |> 
   dplyr::mutate(n.barcodes = NA) |> 
   dplyr::mutate(n.genes = NA) |> 
-  dplyr::mutate(n.reads = NA)
+  dplyr::mutate(n.reads = NA) |> 
+  # cellranger csv
+  dplyr::mutate(path_cellranger_summary = paste0(path_soupx, "/metrics_summary.csv"))|> 
+  dplyr::mutate(tmp = read.csv(path_cellranger_summary)) |> 
+  tidyr::unnest(tmp)
 ```
+
+
+
+
+
+
 
 # Fig 1: Sample overview
 
@@ -58,27 +72,16 @@ https://github.com/constantAmateur/SoupX
 ```{r}
 sample <- data_per_sample |> 
   dplyr::slice(1)
-
-sc <- SoupX::load10X(sample$path_soupx, verbose=T)
-
-data_per_sample <- data_per_sample |> 
-  dplyr::mutate(n.barcodes = ifelse(.data$sid == sample$sid, ncol(sc$toc), n.barcodes)) |> 
-  dplyr::mutate(n.genes = ifelse(.data$sid == sample$sid, nrow(sc$toc), n.genes))
 ```
 
-
-```{r}
-plt <- data.frame(counts.per.barcode = Matrix::colSums(sc$toc)) |> 
-  dplyr::mutate(rank = order(order(dplyr::desc(counts.per.barcode))))
-
-ggplot(plt, aes(x=rank, y=counts.per.barcode)) +
-  geom_line() +
-  scale_y_log10() +
-  labs(x="10X barcode", y="read count per barcode", subtitle=paste0("QC plot: ", sample$sample_name)) +
-  theme_youri
-
-rm(plt)
+```{r, message = FALSE, warning=FALSE}
+sc <- SoupX::load10X(
+ sample$path_soupx,
+ verbose=T,
+ keepDroplets=TRUE)
+SoupX::plotDropletResolution(sc) + labs(subtitle = paste0("UMIs per droplot: ", sample$sample_name))
 ```
+
 
 
 ```{r}
@@ -86,7 +89,7 @@ sc <- SoupX::autoEstCont(sc)
 out <- SoupX::adjustCounts(sc)
 ```
 
-```{r, contribution genes to 'soup'}
+```{r, contribution genes to soup}
 plt <- sc |>
   purrr::pluck('soupProfile') |> 
   dplyr::arrange(desc(est)) |> 
@@ -98,22 +101,252 @@ ggplot(plt |> head(n=20), aes(x=reorder(gene_symbol, desc(counts)), y=counts)) +
   theme_youri_barplot
 ```
 
-
+```{r}
+SoupX::plotMarkerDistribution(sc)
+```
 
 
 ```{r, eval=FALSE}
-plotMarkerDistribution(sc)
 plotChangeMap(sc, out, "COL1A1")
 plotChangeMap(sc, out, "COL1A2")
 plotChangeMap(sc, out, "CD248")
 plotChangeMap(sc, out, "PDGFRB")
 plotChangeMap(sc, out, "CD163")
 plotChangeMap(sc, out, "RBFOX3")
-#SoupX::plotMarkerMap()
 SoupX::plotMarkerMa
+```
+
+```{r}
+library(SoupX)
+dataDir = sample$path_soupx
+cellIDs=NULL
+channelName=NULL
+readArgs=list()
+includeFeatures=c('Gene Expression')
+verbose=TRUE
+
+
+isV3 = dir.exists(file.path(dataDir,'raw_feature_bc_matrix'))
+isV7 = dir.exists(file.path(dataDir,'analysis','clustering','gene_expression_graphclust'))
+isMulti = dir.exists(file.path(dataDir,'analysis', 'clustering', 'gex'))
+tgt = file.path(dataDir,
+                ifelse(isV3,'raw_feature_bc_matrix','raw_gene_bc_matrices'))
+#Add the reference genome for the non-V3 ones
+if(!isV3)
+  tgt = file.path(tgt,list.files(tgt))
+if(verbose)
+  message(sprintf("Loading raw count data"))
+dat = do.call(Read10X,c(list(data.dir=tgt),readArgs))
+if(verbose)
+  message(sprintf("Loading cell-only count data"))
+
+
+dim(dat)
+
+
+if(!is.null(cellIDs)){
+  #This is now redundant as we require the version of Seurat that does not strip the suffix
+  ####Do the same sripping that Seurat does on IDs
+  ###if(all(grepl('\\-1$',cellIDs)))
+  ###  cellIDs = gsub('\\-1$','',cellIDs)
+  #Check we have the IDs
+  if(!all(cellIDs %in% colnames(dat)))
+    stop("Not all supplied cellIDs found in raw data.")
+  datCells = dat[,match(cellIDs,colnames(dat))]
+}else{
+  #Work out which ones contain cells
+  tgt = file.path(dataDir,
+                  ifelse(isV3,'filtered_feature_bc_matrix','filtered_gene_bc_matrices'))
+  if(!isV3)
+    tgt = file.path(tgt,list.files(tgt))
+  datCells = do.call(Read10X,c(list(data.dir=tgt),readArgs))
+  #If it's a list of multiple types, have to decide what to include and collapse to one matrix.
+  if(is.list(dat)){
+    dat = do.call(rbind,dat[includeFeatures])
+    datCells = do.call(rbind,datCells[includeFeatures])
+  }
+}
+
+
+
+
+dim(dat)
+dim(datCells)
+
+
+
+
+if(verbose)
+  message(sprintf("Loading extra analysis data where available"))
+#Get the cluster annotation if available
+mDat = NULL
+#What needs to be added to make V7 directory structure work
+v7Prefix=ifelse(isV7,'gene_expression_','')
+tgt = ifelse(isMulti && !isV7,
+             file.path(dataDir,'analysis','clustering', 'gex', 'graphclust','clusters.csv'),
+             file.path(dataDir,'analysis','clustering',paste0(v7Prefix,'graphclust'),'clusters.csv')
+             )
+if(file.exists(tgt)){
+  clusters = read.csv(tgt)
+  mDat = data.frame(clusters=clusters$Cluster,row.names=clusters$Barcode)
+}
+
+
+
+
+dim(dat)
+dim(datCells)
+
+
+
+tgt = ifelse(isMulti && !isV7,
+             file.path(dataDir,'analysis','clustering', 'gex', 'kmeans_10_clusters','clusters.csv'),
+             file.path(dataDir,'analysis','clustering',paste0(v7Prefix,'kmeans_10_clusters'),'clusters.csv')
+             )
+if(file.exists(tgt)){
+  clusters = read.csv(tgt)
+  mDat$clustersFine = clusters$Cluster
+}
+#Get tSNE if available and point to it
+tgt = ifelse(isMulti && !isV7,
+             file.path(dataDir,'analysis','dimensionality_reduction','gex','tsne_projection.csv'),
+             file.path(dataDir,'analysis','tsne',paste0(v7Prefix,'2_components'),'projection.csv')
+             )
+if(file.exists(tgt)){
+  tsne = read.csv(tgt)
+  if(is.null(mDat)){
+    mDat = data.frame(tSNE1=tsne$TSNE.1,tSNE2=tsne$TSNE.2,row.names=tsne$Barcode)
+  }else{
+    mDat$tSNE1 = tsne$TSNE.1[match(rownames(mDat),tsne$Barcode)]
+    mDat$tSNE2 = tsne$TSNE.2[match(rownames(mDat),tsne$Barcode)]
+  }
+  DR = c('tSNE1','tSNE2')
+}else{
+  DR=NULL
+}
+
+
+dim(dat)
+
+
+
+if(!is.null(mDat) && any(rownames(mDat)!=colnames(datCells))){
+  rownames(mDat) = gsub('-1$','',rownames(mDat))
+  if(any(rownames(mDat)!=colnames(datCells)))
+    stop("Error matching meta-data to cell names.")
+}
+#Get a name for the channel
+if(is.null(channelName))
+  channelName = ifelse(is.null(names(dataDir)),dataDir,names(dataDir))
+
+
+
+
+dim(dat) # all droplets?
+dim(datCells) # all droplets present within _filtered_ files [cellRanger?]
+
+
+tod = dat 
+toc = datCells
+rm(dat, datCells)
+
+
+
+# SoupChannel function
+metaData=NULL
+calcSoupProfile=TRUE
+
+
+if(!is.null(metaData) & !all(sort(colnames(toc))==sort(rownames(metaData))))
+  stop("Rownames of metaData must match column names of table of counts.")
+#Check that tod and toc are compatible
+if(nrow(tod)!=nrow(toc))
+  stop("The provided table of droplets (tod) and table of counts (toc) have different numbers of genes.  Both tod and toc must have the same genes in the same order.")
+if(any(rownames(tod)!=rownames(toc)))
+  stop("Rownames of the table of droplets (tod) and table of counts (toc) differ.  Both tod and toc must have the same genes in the same order.")
+
+
+
+
+out = list(tod=tod,toc=toc)
+#out = c(out,list(...))
+str(out)
+#Create the metadata object
+out$metaData = data.frame(row.names=colnames(toc),
+                          nUMIs = colSums(toc)
+                          )
+str(out)
+
+
+ #Get the droplet UMIs as well, as that's a useful thing to have
+out$nDropUMIs = colSums(tod)
+class(out) = c('list','SoupChannel')
+#Estimate the soup
+if(calcSoupProfile)
+  out = estimateSoup(out)
+str(out)
+
+
+
+channel = SoupChannel(tod = tod,
+                      toc = toc,
+                        metaData = mDat,
+                        channelName = channelName,
+                        dataDir = dataDir,
+                        dataType='10X',
+                        isV3=isV3,
+                        DR=DR,
+                        )
+
+
+str(channel)
+
+
+
+plt <- data.frame(umi.count = Matrix::colSums(tod)) |> 
+  dplyr::filter(umi.count > 0) |> 
+  tibble::rownames_to_column('barcode') |> 
+  dplyr::mutate(filtered = .data$barcode %in% colnames(toc)) |> 
+  dplyr::mutate(rank = order(order(dplyr::desc(umi.count))))
+
+ggplot(plt, aes(x=rank, y=umi.count, col=filtered)) +
+  geom_point(pch=19,cex=0.1) +
+  scale_y_log10() +
+  labs(x="10X barcode", y="read count per barcode", subtitle=paste0("QC plot: ", sample$sample_name)) +
+  theme_youri
+
 ```
 
 
 
+function 1:
+SoupX::load10X(sample$path_soupx, verbose=T, keepDroplets=TRUE) [load10X.R]
+SoupX::SoupChannel(tod = dat,
+                        toc = datCells,
+                        metaData = mDat,
+                        channelName = channelName,
+                        dataDir = dataDir,
+                        dataType='10X',
+                        isV3=isV3,
+                        DR=DR,
+                        ...
+                        ) [classFunctions.R]
+SoupX::estimateSoup(out) [estimateSoup.R] << moet hier , ... toegevoegd worden?
+
+c <- function(bb="?",asd="yes") {
+  print(asd)
+  print(neverinvoked)
+}
+
+b <- function(..., afsnoep="?") {
+  print(afsnoep)
+  return(c(...))
+}
+
+a <- function(...) {
+  return(b(...))
+}
+
+a(afsnoep="???>>",asd="@@@",neverinvoked="##")
 
 
