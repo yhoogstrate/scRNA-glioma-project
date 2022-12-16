@@ -1,0 +1,28 @@
+Package: scRNA-glioma-project
+Type: Package
+Title: scRNA-glioma-project
+Version: 0.0.1
+Author: Dr. Youri Hoogstrate
+Maintainer: Youri Hoogstrate <y.hoogstrate@erasmusmc.nl>
+Description: Analysis on scRNA data
+License: GPL-3 + file LICENSE
+URL: https://github.com/yhoogstrate/scRNA-glioma-project
+BugReports: https://github.com/yhoogstraet/scRNA-glioma-project/issues
+Encoding: UTF-8
+LazyData: true
+LazyDataCompression: xz
+VignetteBuilder: knitr
+Depends:
+    R (>= 4.2)
+Imports:
+    stats,
+    dplyr,
+    ggplot2 (>= 3.0.0),
+    rlang (>= 1.0.2),
+    tibble,
+    patchwork,
+    reshape2,
+    DropletUtils
+Suggests:
+    knitr, rmarkdown
+RoxygenNote: 7.2.1

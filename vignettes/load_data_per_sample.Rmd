@@ -1,0 +1,296 @@
+---
+title: "Glioma scRNA project - Loading data per sample"
+author: "Youri Hoogstrate"
+date: "`r BiocStyle::doc_date()`"
+---
+
+```{r, eval=FALSE}
+remove.packages('SoupX')
+xfun::install_github("https://github.com/yhoogstrate/SoupX/tree/passthrough_arguments")
+```
+
+
+# setup
+
+```{r, message=F, warnings=F}
+library(dplyr)
+
+print(getwd()) # 
+
+source('scripts/theme_youri.R')
+```
+
+# add sample desrciptors
+```{r init df}
+data_per_sample <- data.frame()
+```
+
+## van Hijfte - GBM sample Y
+
+```{r attach dataset}
+data_per_sample <- data_per_sample |> 
+  rbind(data.frame(
+    "sid" = "van_Hijfte_GBM_Y",
+    "sample_name" = "van Hijfte - GBM Sample Y",
+    "doi" = "https://dx.doi.org/zenodo.6546712",
+    "path_seurat" = 'data/van_Hijfte_GBM_Y/Glioma_Y_and_O/Levi2_Glioma_Y/outs/raw_feature_bc_matrix'
+  ))
+```
+
+# Add some columns based on existing
+
+```{r}
+data_per_sample <- data_per_sample |> 
+  dplyr::mutate(path_soupx = gsub("^(.+)/[^.]+$","\\1", path_seurat)) |> 
+  dplyr::mutate(n.barcodes = NA) |> 
+  dplyr::mutate(n.genes = NA) |> 
+  dplyr::mutate(n.reads = NA) |> 
+  # cellranger csv
+  dplyr::mutate(path_cellranger_summary = paste0(path_soupx, "/metrics_summary.csv"))|> 
+  dplyr::mutate(tmp = read.csv(path_cellranger_summary)) |> 
+  tidyr::unnest(tmp)
+```
+
+
+
+# Fig 1: Sample overview
+
+```{r dataset overview}
+data_per_sample
+```
+
+# obtain generic stats
+## SoupX analysis
+
+https://github.com/constantAmateur/SoupX
+
+```{r}
+sample <- data_per_sample |> 
+  dplyr::slice(1)
+```
+
+```{r, message = FALSE, warning=FALSE}
+sc <- SoupX::load10X(sample$path_soupx, verbose=T, keepDroplets=TRUE)
+SoupX::plotDropletResolution(sc) +
+  ggplot2::labs(subtitle = paste0("UMIs per droplot: ", sample$sample_name))
+```
+
+
+## obtain spike-ins
+
+Spike-in virtual soup cells to show where they appear
+```{r}
+si <- SoupX::spikeInTheSoupChannel(sc,)
+saveRDS(si, file=paste0("cache/soup-spike-ins/soup_spike_ins__",sample$sid,"__5000.Rds"))
+rm(si)
+```
+
+# Select QC passing cells
+```{r}
+sc <- Seurat::Read10X(data.dir = sample$path_seurat)
+si <- readRDS(file=paste0("cache/soup-spike-ins/soup_spike_ins__",sample$sid,"__5000.Rds"))
+sc <- cbind(sc, si)
+rm(si)
+```
+
+create full seurat object, filter later on more
+```{r}
+sc <- Seurat::CreateSeuratObject(counts = sc,
+  min.cells = 3,
+  min.features = 150,
+  project = sample$sample_name)
+sc[['soup.droplets']] <- ifelse(grepl("Soup", Seurat::Cells(sc)),"Soup Spike-in","actual droplet")
+```
+
+Add % mito-reads to each droplet
+
+```{r}
+mito.features <- grep(pattern = "^MT-", x=rownames(x=sc), value=T)
+sc[['percent.mito']] <- Matrix::colSums(x = GetAssayData(object = sc, slot="counts")[mito.features,]) / Matrix::colSums(x = GetAssayData(object = sc, slot = "counts"))
+rm(mito.features)
+```
+
+```{r}
+ribo.features <- grep(pattern = "^RPL", x=rownames(x=sc), value=T)
+sc[['percent.ribo']] <- Matrix::colSums(x = GetAssayData(object = sc, slot="counts")[ribo.features,]) / Matrix::colSums(x = GetAssayData(object = sc, slot = "counts"))
+rm(ribo.features)
+```
+
+as MALAT1 is highly present in soup, see if this is more than anything else
+```{r}
+sc[['percent.malat1']] <-  GetAssayData(object = sc, slot="counts")[c("MALAT1"),] / Matrix::colSums(x = GetAssayData(object = sc, slot = "counts"))
+```
+
+plot qc
+```{r}
+VlnPlot(object = sc, features = c("nFeature_RNA", "nCount_RNA", "percent.mito", "percent.ribo"), ncol = 4, pt.size = 0.01, group.by = "soup.droplets")
+```
+
+
+```{r}
+ggplot(sc@meta.data, aes(y=`nFeature_RNA`, x=orig.ident)) +
+  geom_jitter(cex=0.01) +
+  geom_hline(yintercept = 1400,col="red") +
+  geom_hline(yintercept = 4500,col="red")
+
+ggplot(sc@meta.data, aes(y=`nCount_RNA`, x=orig.ident)) +
+  geom_jitter(cex=0.01)  +
+  geom_hline(yintercept = 1600,col="red") +
+  geom_hline(yintercept = 14000,col="red")
+  #scale_y_log10()
+
+sc <- subset(x = sc, subset = 
+                     nFeature_RNA > 750 &
+                     nCount_RNA > 1400
+                     #nFeature_RNA < 4500 & 
+                     #nCount_RNA < 14000 &
+                     #percent.mito < 0.025
+)
+
+sc <- NormalizeData(object = sc, normalization.method = "LogNormalize", scale.factor = 1e4)
+sc <- FindVariableFeatures(object = sc, selection.method = "vst", nfeatures = 2000)
+sc <- ScaleData(sc)
+```
+
+PCA
+```{r}
+sc <- RunPCA(sc, features = VariableFeatures(object = sc))
+VizDimLoadings(sc, dims = 1:2, reduction = "pca")
+DimPlot(sc, reduction = "pca",group.by = "soup.droplets")
+DimPlot(subset(sc, soup.droplets == "actual droplet"), reduction = "pca") + DimPlot(sc, reduction = "pca",group.by = "soup.droplets")
+```
+
+
+Clustering
+```{r}
+ElbowPlot(sc, ndims = 45)
+sc <- FindNeighbors(sc, dims = 1:34)
+sc <- FindClusters(sc, resolution = 0.8, algorithm=1)
+sc[['label']] = paste0(sc[['seurat_clusters']]$seurat_clusters ,"_",sc[['soup.droplets']]$soup.droplets)
+```
+
+
+UMAP
+```{r}
+sc <- RunUMAP(sc, dims = 1:34)
+```
+
+VIS umap etc
+```{r}
+DimPlot(sc, reduction = "umap", label = TRUE, pt.size = .8, group.by = "seurat_clusters")
+DimPlot(sc, reduction = "umap", label = TRUE, pt.size = .8, group.by = "label")
+DimPlot(sc, reduction = "umap", label = TRUE, pt.size = .8, group.by = "soup.droplets")
+
+sum(sc[['seurat_clusters']]$seurat_clusters == 12 & sc[['soup.droplets']] == "actual droplet")
+sum(sc[['seurat_clusters']]$seurat_clusters == 24) # 31 t-cells
+sum(sc[['seurat_clusters']]$seurat_clusters == 24  & sc[['lowres']] == T) # 31 t-cells
+
+
+VlnPlot(sc, features = c('nCount_RNA'))
+VlnPlot(sc, features = c('percent.mito'))
+VlnPlot(sc, features = c('percent.ribo'))
+
+
+
+sc[['lowres']] <- sc[['nFeature_RNA']]$nFeature_RNA < 1400 |
+  sc[['nCount_RNA']]$nCount_RNA < 2200 |
+  sc[['percent.mito']]$percent.mito >= 0.025
+DimPlot(sc, reduction = "umap", label = TRUE, pt.size = .8, group.by = "lowres")
+DimPlot(sc, reduction = "umap", label = TRUE, pt.size = .8, group.by = "seurat_clusters")
+
+
+DimPlot(sc, reduction = "pca", dims=c(1,2), label = TRUE, pt.size = .8, group.by = "label")
+DimPlot(sc, reduction = "pca", dims=c(1,3), label = TRUE, pt.size = .8, group.by = "label")
+DimPlot(sc, reduction = "pca", dims=c(2,3), label = TRUE, pt.size = .8, group.by = "label")
+DimPlot(sc, reduction = "pca", dims=c(1,4), label = TRUE, pt.size = .8, group.by = "label")
+DimPlot(sc, reduction = "pca", dims=c(1,5), label = TRUE, pt.size = .8, group.by = "label")
+
+
+m.11 <- FindMarkers(sc, ident.1 = c('11_Soup Spike-in'), group.by = "label")
+m.15 <- FindMarkers(sc, ident.1 = c('15_actual droplet'), group.by = "label")
+m.16 <- FindMarkers(sc, ident.1 = c('16_actual droplet'), group.by = "label")
+m.23 <- FindMarkers(sc, ident.1 = c('23'), group.by = "seurat_clusters") # hoop low-res
+
+head(m.11, 15)
+head(m.15, 15)
+head(m.16, 15)
+
+
+FeaturePlot(sc, c('CSF3R'))
+FeaturePlot(sc, c('CD163'))
+FeaturePlot(sc, c('PDGFRB'))
+FeaturePlot(sc, c('EGFR'))
+FeaturePlot(sc, c('RBFOX3'))
+
+FeaturePlot(sc, c('COL1A1'))
+FeaturePlot(sc, c('COL1A2'))
+FeaturePlot(sc, c('RGS5'))
+FeaturePlot(sc, c('CD248'))
+
+FeaturePlot(sc, c('LCK'))
+FeaturePlot(sc, c('CD2'))
+```
+
+
+Find soup component
+```{r}
+DimHeatmap(sc, dims = c(1, 2))
+DimHeatmap(sc, dims = c(3, 4))
+DimHeatmap(sc, dims = c(5, 6))
+DimHeatmap(sc, dims = c(7, 8))
+DimHeatmap(sc, dims = c(9, 10)) # PC-9 [juist laag in spike-ins?]?
+
+FeaturePlot(sc, c('JCHAIN','IGHG1'))
+```
+
+```{r}
+VizDimLoadings(sc, dims = 9, reduction = "pca")
+sc[['PC_9']] = FetchData(sc, vars = c("PC_9")) * -1 # was negatieve pc
+sc.n <- ScaleData(sc, vars.to.regress = c("PC_9"), features = rownames(sc))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+sc <- SoupX::autoEstCont(sc)
+out <- SoupX::adjustCounts(sc)
+```
+
+```{r, contribution genes to soup}
+plt <- sc |>
+  purrr::pluck('soupProfile') |> 
+  dplyr::arrange(desc(est)) |> 
+  tibble::rownames_to_column('gene_symbol') 
+
+ggplot(plt |> head(n=20), aes(x=reorder(gene_symbol, desc(counts)), y=counts)) +
+  geom_point() +
+  scale_y_log10() +
+  theme_youri_barplot
+```
+
+```{r}
+SoupX::plotMarkerDistribution(sc)
+```
+
+
+```{r, eval=FALSE}
+plotChangeMap(sc, out, "COL1A1")
+plotChangeMap(sc, out, "COL1A2")
+plotChangeMap(sc, out, "CD248")
+plotChangeMap(sc, out, "PDGFRB")
+plotChangeMap(sc, out, "CD163")
+plotChangeMap(sc, out, "RBFOX3")
+SoupX::plotMarkerMa
+```
+
+

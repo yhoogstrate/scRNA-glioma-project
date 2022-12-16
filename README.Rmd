@@ -1,0 +1,29 @@
+---
+title: "scRNA glioma project"
+output: 
+    github_document:
+        toc: true # table of content true
+        toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+---
+
+
+<!-- README.md is generated from README.Rmd through: devtools::build_readme() . Please edit that file -->
+<!-- Nice example package: https://github.com/hadley/babynames -->
+
+
+---
+
+
+![license](https://img.shields.io/badge/license-GPL--3-blue.svg)
+[![GitHub issues](https://img.shields.io/github/issues/yhoogstrate/scRNA-glioma-project.svg)]()
+![rversion](https://img.shields.io/badge/R%20version-%3E4.2.0-lightgrey.svg)
+
+# Introduction
+
+This projects aims to clean-up and integrate publicly available glioma s[c/n]RNA.
+
+# Dataset overview
+
+```{r}
+data_per_sample
+```
