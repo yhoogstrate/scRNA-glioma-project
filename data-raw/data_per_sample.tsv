@@ -1,2 +1,3 @@
-"sid"	"sample_name"	"doi"	"path"	"date_added"	"IDH-status"
-"van_Hijfte_GBM_Y"	"van Hijfte - GBM Sample Y"	"https://dx.doi.org/zenodo.6546712"	"data/van_Hijfte_GBM_Y/Glioma_Y_and_O/Levi2_Glioma_Y/outs"	"12-12-2022"	"wt"
+"sid"	"sample_name"	"date_added"	"IDH-status"	"technique"	"path"	"doi"
+"van_Hijfte__GBM_Y"	"van Hijfte - GBM Sample Y"	"12-12-2022"	"wt"	"snRNA-seq"	"data-external/van_Hijfte_GBM_Y"	"https://dx.doi.org/zenodo.6546712"
+"Diaz__GSM4119531_SF11979"	"Diaz - GSM4119531 / SF11979"	"16-12-2022"	"wt"	"scRNA"	"data-external/van_Hijfte_GBM_Y/scRNA_GSM4119531_SF11979_GBM"	"NA"

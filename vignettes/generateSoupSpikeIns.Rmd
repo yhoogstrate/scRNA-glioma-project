@@ -1,5 +1,5 @@
 ---
-title: "Glioma scRNA project - Loading data per sample"
+title: "Glioma scRNA project"
 author: "Youri Hoogstrate"
 date: "`r BiocStyle::doc_date()`"
 ---
@@ -8,9 +8,7 @@ First, load the (meta-)data
 
 ```{r}
 devtools::document()
-devtools::load_all()
 ```
-
 
 
 ```{r, eval=FALSE}
@@ -18,64 +16,12 @@ remove.packages('SoupX')
 xfun::install_github("https://github.com/yhoogstrate/SoupX/tree/passthrough_arguments")
 ```
 
-
-# setup
-
-```{r, message=F, warnings=F}
-library(dplyr)
-
-print(getwd()) # 
-
-source('scripts/theme_youri.R')
-```
-
-# add sample desrciptors
-```{r init df}
-data_per_sample <- data.frame()
-```
-
-## van Hijfte - GBM sample Y
-
-```{r attach dataset}
-data_per_sample <- data_per_sample |> 
-  rbind(data.frame(
-    "sid" = "van_Hijfte_GBM_Y",
-    "sample_name" = "van Hijfte - GBM Sample Y",
-    "doi" = "https://dx.doi.org/zenodo.6546712",
-    "path_seurat" = 'data/van_Hijfte_GBM_Y/Glioma_Y_and_O/Levi2_Glioma_Y/outs/raw_feature_bc_matrix'
-  ))
-```
-
-# Add some columns based on existing
-
-```{r}
-data_per_sample <- data_per_sample |> 
-  dplyr::mutate(path_soupx = gsub("^(.+)/[^.]+$","\\1", path_seurat)) |> 
-  dplyr::mutate(n.barcodes = NA) |> 
-  dplyr::mutate(n.genes = NA) |> 
-  dplyr::mutate(n.reads = NA) |> 
-  # cellranger csv
-  dplyr::mutate(path_cellranger_summary = paste0(path_soupx, "/metrics_summary.csv"))|> 
-  dplyr::mutate(tmp = read.csv(path_cellranger_summary)) |> 
-  tidyr::unnest(tmp)
-```
-
-
-
-# Fig 1: Sample overview
-
-```{r dataset overview}
-data_per_sample
-```
-
-# obtain generic stats
-## SoupX analysis
-
-https://github.com/constantAmateur/SoupX
+# process van hijfte sample y
 
 ```{r}
 sample <- data_per_sample |> 
   dplyr::slice(1)
+sc <- Seurat::Read10X(data.dir = paste0(sample$path, "/filtered_feature_bc_matrix"))
 ```
 
 ```{r, message = FALSE, warning=FALSE}

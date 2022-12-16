@@ -45,5 +45,6 @@ data_per_sample |>
   dplyr::mutate(doi = gsub("^.+\\/","",doi))
 ```
 
-    ##                 sample_name IDH date_added            doi
-    ## 1 van Hijfte - GBM Sample Y  wt 2022-12-12 zenodo.6546712
+    ##                   sample_name       IDH date_added              doi
+    ## 1 Diaz - GSM4119531 / SF11979        wt 2022-12-16                 
+    ## 2   van Hijfte - GBM Sample Y snRNA-seq       <NA> van_Hijfte_GBM_Y
